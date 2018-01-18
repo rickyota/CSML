@@ -1,0 +1,93 @@
+import numpy as np
+from cv2 import connectedComponents
+from skimage.io import imread
+
+
+# class of Images
+class ImClass:
+
+	def __init__(self, usetype, fname_i="", fname_x="", fname_t="",
+				N_train=25000, N_test=3000, hgh=32, wid=32):
+		
+		# input size of classifier
+		self.hgh = hgh
+		self.wid = wid
+		self.shapex = [1, self.hgh, self.wid]
+		self.shapet = [self.hgh, self.wid]
+		
+		if usetype == 'train':
+			im_x, im_t = self.load_imx(fname_x), self.load_imt(fname_t)
+			self.imdata_pkl = self.make_pkl(im_x, im_t, N_test, N_train)
+
+		elif usetype == 'infer':
+			self.im_xwhole = self.load_imx(fname_i)
+	
+	# load images
+	def load_imx(self, fname):
+		im = np.asarray(imread(fname, as_grey=True), np.float32) / 255.0
+		if len(im.shape) == 2:
+			im = im.reshape((-1, im.shape[0], im.shape[1]))
+		return im
+
+	# load contoured images
+	def load_imt(self, fname):
+		im = np.asarray(imread(fname) / 255, np.int32)
+		if len(im.shape) == 2:
+			im = im.reshape((-1, im.shape[0], im.shape[1]))		
+		return im
+
+	# load batches
+	def load_batch(self):
+		return self.imdata_pkl['x_train'], self.imdata_pkl['t_train'], self.imdata_pkl['x_test'], self.imdata_pkl['t_test']
+
+	# load whole images
+	def load_xwhole(self):
+		return self.im_xwhole
+	
+	# make file that all images packed in 
+	def make_pkl(self, im_x, im_t, N_test, N_train):
+		imdata_pkl = {}
+		imdata_pkl['x_train'], imdata_pkl['t_train'], imdata_pkl['x_test'], imdata_pkl['t_test'] = self.pickimages(im_x, im_t, N_test, N_train)
+		return imdata_pkl
+
+	# choose images suitable for small training images
+	def pickimages(self, im_x, im_t, N_test, N_train):
+		N_each = int((N_train + N_test) / im_x.shape[0])
+		x_tmp, t_tmp = [], []
+		
+		for i, (im_x_each, im_t_each) in enumerate(zip(im_x, im_t)):
+			bound = self.getBound(im_t_each)
+			xs, ys = np.where(bound == True)		
+			perm = np.random.permutation(xs.shape[0])
+			xs, ys = xs[perm[0:2 * N_each]], ys[perm[0:2 * N_each]]
+			
+			count = 0;
+			for i in range(2 * N_each):
+				x, y = xs[i], ys[i]
+				im_t_tmp = im_t_each[x:x + self.hgh, y:y + self.wid]
+				if self.isInBound(bound, x, y):
+					im_x_tmp = im_x_each[x:x + self.hgh, y:y + self.wid]
+					x_tmp.append(im_x_tmp), t_tmp.append(im_t_tmp)
+					count = count + 1
+					if count >= N_each: break;
+					
+		x_tmp, t_tmp = np.asarray(x_tmp, np.float32), np.asarray(t_tmp, np.int32)
+		x_tmp, t_tmp = x_tmp.reshape([-1] + self.shapex), t_tmp.reshape([-1] + self.shapet)		
+		
+		x_train, t_train = x_tmp[0:N_train], t_tmp[0:N_train]
+		x_test, t_test = x_tmp[N_train:N_train + N_test], t_tmp[N_train:N_train + N_test]
+		
+		return x_train, t_train, x_test, t_test
+	
+	# get criteria of whether suitable or not
+	def getBound(self, im_t_each):
+		_, bound = connectedComponents(np.uint8(1 - im_t_each))
+		bound[bound != 1] = 0
+		bound = 1 - bound
+		bound = np.asarray(bound, bool)
+		return bound
+	
+	# judge based on criteria
+	def isInBound(self, bound, x, y):
+		return bound[x + self.hgh, y] and bound[x, y + self.wid] and bound[x + self.hgh, y + self.wid]
+		

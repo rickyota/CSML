@@ -1,5 +1,5 @@
 # CSML   ver.1.0.0
-Cell Segmentater by Machine Learning.  
+Cell Segmenter by Machine Learning.  
 Software based on this code is distributed [(here)](http://...).  
 
 
@@ -42,17 +42,17 @@ Please refer to this section, if you want to run codes directly.
 
 ### Installation
 ```
-git clone https://github.com/RickyOta/FCN.git
+git clone https://github.com/RickyOta/CSML.git
 ```
 
 
 ### Usage
-1. Add images to ```FCN/data``` and edit paths of images in ```FCN/main.py```.  
-1. Move into ```FCN/src``` and execute
+1. Add images to ```CSML/data``` and edit paths of images in ```CSML/main.py```.  
+1. Move into ```CSML/src``` and execute
 ```
 python main.py
 ```
-1. Inferred images are saved in ```FCN/result```
+1. Inferred images are saved in ```FCN/result```.
 
 
 

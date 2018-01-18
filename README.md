@@ -4,7 +4,7 @@ Software based on this code is distributed [(here)](http://...).
 
 
 ## Description
-Return segmented images of fluorescent images, inferred by FCN classifier optimized by training images.  
+Return segmented images of fluorescent ones, inferred by FCN classifier optimized by training images.  
 
 
 ## Usage of Software
@@ -52,7 +52,7 @@ git clone https://github.com/RickyOta/CSML.git
 ```
 python main.py
 ```
-1. Inferred images are saved in ```FCN/result```.
+1. Inferred images are saved in ```CSML/result```.
 
 
 

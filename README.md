@@ -1,6 +1,6 @@
-# CSML   ver.1.0.0
-Cell Segmenter by Machine Learning.  
-Software based on this code is distributed [(here)](http://...).  
+# CSML    ver. 1.0.0
+Cell Segmenter using Machine Learning.  
+Software based on this code is distributed [(here)](https://github.com/RickyOta/CSML/releases).  
 
 
 ## Description
@@ -25,14 +25,14 @@ Return segmented images of fluorescent ones, inferred by FCN classifier optimize
 
 
 ## Author
-[R, Ota](https://github.com/RickyOta)
+[R. Ota](https://github.com/RickyOta)
 
 
 
 ---
 
 ##  Usage of Codes
-Please refer to this section, if you want to run codes directly.
+Please refer to this section, if you want to run the codes directly.
 
 ### Requirement
 - Python <3.6
@@ -49,11 +49,8 @@ git clone https://github.com/RickyOta/CSML.git
 ### Usage
 1. Add images to ```CSML/data``` and edit paths of images in ```CSML/main.py```.  
 1. Move into ```CSML/src``` and execute
-```
-python main.py
-```
+	```
+	python main.py
+	```
 1. Inferred images are saved in ```CSML/result```.
-
-
-
 

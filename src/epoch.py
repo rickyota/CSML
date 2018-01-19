@@ -21,8 +21,7 @@ def train_epoch(model, optimizer, x_train, t_train, batchsize=100):
 		sum_loss += float(loss.data) * batchsize
 		sum_acc += float(acc.data) * batchsize
 		if i % 10000 == 0:
-			print("train:", i)
-			print("No.", i, "loss", "{:.3f}".format(float(loss.data)), "acc", "{:.3f}".format(float(acc.data)))
+			print("training:", i, "loss:", "{:.3f}".format(float(loss.data)), "acc:", "{:.3f}".format(float(acc.data)))
 
 	train_loss_t, train_acc_t = sum_loss / N_train, sum_acc / N_train
 
@@ -42,7 +41,7 @@ def test_epoch(model, x_test, t_test, batchsize=100):
 		sum_acc += float(acc.data) * batchsize
 
 		if i % 1000 == 0:
-			print("No.", i, "acc", "{:.3f}".format(float(acc.data)))
+			print("testing:", i, "acc:", "{:.3f}".format(float(acc.data)))
 
 	test_acc_t = sum_acc / N_test
 

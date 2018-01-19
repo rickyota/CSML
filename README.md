@@ -35,9 +35,9 @@ Return segmented images of fluorescent ones, inferred by FCN classifier optimize
 Please refer to this section, if you want to run the codes directly.
 
 ### Requirement
-- Python <3.6
-- Chainer >=1.21
-- OpenCV >=3.1
+- Python >=3.6
+- Chainer >=3.2
+- OpenCV >=3.4
 
 
 ### Installation

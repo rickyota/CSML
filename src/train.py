@@ -9,6 +9,9 @@ import pickle
 
 # training step
 def train_step(fname_train="", fname_label="", fname_model="", N_train=25000, N_test=3000, N_epoch=1, batchsize=100, hgh=32, wid=32):
+	
+	print("start training.")
+	
 	im = ImClass('train', fname_x=fname_train, fname_t=fname_label, N_train=N_train, N_test=N_test, hgh=hgh, wid=wid)
 	x_train, t_train, x_test, t_test = im.load_batch()
 	print("shapes:", x_train.shape, t_train.shape, x_test.shape, t_test.shape)
@@ -39,6 +42,8 @@ def train_step(fname_train="", fname_label="", fname_model="", N_train=25000, N_
 	data_model['testacc'] = test_acc
 	with open(fname_model, 'wb') as p:
 		pickle.dump(data_model, p, -1)
+		
+	print("done training.")
 	
 		
 if __name__ == '__main__':

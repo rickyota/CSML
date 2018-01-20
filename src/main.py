@@ -1,52 +1,55 @@
 from train import train_step
 from infer import infer_step
 
+import configparser
+import sys
+
 
 def Cell_Segmentation():
-	# 'both' or 'infer
-	segtype = 'both'
 	
-	if segtype == 'both':
-		# filenames for train
-		fname_train = "../data/Cell_train.tiff"  # image
-		fname_label = "../data/Cell_label.tiff"  # label
-		fname_model = "../data/model.pkl"
+	# assert len(sys.argv) == 2, "Expected: 2 args Actual: {0}.".format(len(sys.argv))
+	"""
+	if len(sys.argv)==2:
+		raise SyntaxError(""Expected: 2 args Actual: {0}.".format(len(sys.argv)))
+	else:
+	"""
+	config = configparser.ConfigParser()
+	config.read(sys.argv[1])
+	
+	if sys.argv[1] == 'train_infer.ini':
+		fname_train = "data/" + config['paths']['filename train']
+		fname_label = "data/" + config['paths']['filename label']
+		fname_model = "data/" + config['paths']['filename model']
+		fname_infer = "data/" + config['paths']['filename infer']
+		fname_save = "data/" + config['paths']['filename save']
 		
-		# filenames for infer
-		fname_infer = "../data/Cell_infer.tiff"
-		fname_save = "../result/Cell_inferred.tiff"
+		N_train = int(config['training parameters']['number train'])
+		N_test = int(config['training parameters']['number test'])
+		N_epoch = int(config['default']['number epoch'])
+		batchsize = int(config['default']['number batch'])
+		hgh = int(config['training parameters']['height'])
+		wid = int(config['training parameters']['width'])
 		
-		# parameters for train
-		N_test = 3000
-		N_train = 25000
-		N_epoch = 1
-		batchsize = 100
-		hgh = 32
-		wid = 32
-		
-		# parameters for infer
-		thre_discard = 1000
-		wid_dilate = 1
-		thre_fill = 1
+		thre_discard = int(config['inference parameters']['threshold discard'])
+		wid_dilate = int(config['inference parameters']['width dilate'])
+		thre_fill = int(config['inference parameters']['threshold fill'])
 		
 		train_step(fname_train=fname_train, fname_label=fname_label, fname_model=fname_model, N_test=N_test, N_train=N_train, N_epoch=N_epoch, batchsize=batchsize, hgh=hgh, wid=wid)
 		infer_step(fname_infer=fname_infer, fname_save=fname_save, fname_model=fname_model, thre_discard=thre_discard, wid_dilate=wid_dilate, thre_fill=thre_fill)
 		print("all done.")
 		
-	elif segtype == 'infer':
-		# filenames for infer
-		fname_infer = "../data/Cell_infer.tiff"
-		fname_save = "../result/Cell_inferred.tiff"
-		fname_model = "../data/model.pkl"
+	elif sys.argv[1] == 'infer.ini':
+		fname_model = "data/" + config['paths']['filename model']
+		fname_infer = "data/" + config['paths']['filename infer']
+		fname_save = "data/" + config['paths']['filename save']
 		
-		# parameters for infer
-		thre_discard = 1000
-		wid_dilate = 1
-		thre_fill = 1
-
+		thre_discard = int(config['inference parameters']['threshold discard'])
+		wid_dilate = int(config['inference parameters']['width dilate'])
+		thre_fill = int(config['inference parameters']['threshold fill'])
+		
 		infer_step(fname_infer=fname_infer, fname_save=fname_save, fname_model=fname_model, thre_discard=thre_discard, wid_dilate=wid_dilate, thre_fill=thre_fill)
 		print("all done.")
 
-
+		
 if __name__ == '__main__':
 	Cell_Segmentation()

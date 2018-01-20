@@ -48,8 +48,8 @@ def train_step(fname_train="", fname_label="", fname_model="", N_train=25000, N_
 		
 if __name__ == '__main__':
 	# filenames for train
-	fname_train = "../data/Cell_train.tiff"  # image
-	fname_label = "../data/Cell_label.tiff"  # label
+	fname_train = "../data/embryos_train.tiff"  # image
+	fname_label = "../data/embryos_label.tiff"  # label
 	fname_model = "../data/model.pkl"
 	
 	# parameters for train

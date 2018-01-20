@@ -47,10 +47,15 @@ git clone https://github.com/RickyOta/CSML.git
 
 
 ### Usage
-1. Add images to ```CSML/data``` and edit paths of images in ```CSML/main.py```.  
-1. Move into ```CSML/src``` and execute
+1. Add images to ```CSML/data/```.
+1. Edit values in ```CSML/train_infer.ini``` or ```CSML/infer.ini```.  
+1. Execute
 	```
-	python main.py
+	python src/main.py train_infer.ini
 	```
-1. Inferred images are saved in ```CSML/result```.
+	or
+	```
+	python src/main.py infer.ini
+	```	
+1. Inferred images are saved in ```CSML/result/```.
 

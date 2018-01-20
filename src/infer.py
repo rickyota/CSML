@@ -29,15 +29,16 @@ def infer_step(fname_infer="", fname_save="", fname_model="", thre_discard=1000,
 	
 if __name__ == '__main__':
 	# filenames for infer
-	"""
-	fname_infer = "../data/Cell_infer.tiff"
-	fname_save = "../result/Cell_inferred.tiff"
-	fname_model = "../data/model.pkl"
-	"""
 	
+	fname_infer = "../data/embryos_infer.tiff"
+	fname_save = "../result/embryos_inferred.tiff"
+	fname_model = "../data/model.pkl"
+	
+	"""
 	fname_infer = "../data/180112a.tiff"
 	fname_save = "../result/180112a_segmented.tiff"
 	fname_model = "../data/model.pkl"
+	"""
 	
 	# parameters for infer
 	thre_discard = 1000

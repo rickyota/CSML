@@ -2,6 +2,8 @@ import numpy as np
 from cv2 import connectedComponents
 from skimage.io import imread
 
+import os.path
+
 
 # class of Images
 class ImClass:
@@ -24,16 +26,24 @@ class ImClass:
 	
 	# load images
 	def load_imx(self, fname):
-		im = np.asarray(imread(fname, as_grey=True), np.float32) / 255.0
-		if len(im.shape) == 2:
-			im = im.reshape((-1, im.shape[0], im.shape[1]))
+		if os.path.isfile(fname):
+			im = np.asarray(imread(fname, as_grey=True), np.float32) / 255.0
+			if len(im.shape) == 2:
+				im = im.reshape((-1, im.shape[0], im.shape[1]))
+		elif os.path.isdir(fname):
+			pass
+		
 		return im
 
 	# load contoured images
 	def load_imt(self, fname):
-		im = np.asarray(imread(fname) / 255, np.int32)
-		if len(im.shape) == 2:
-			im = im.reshape((-1, im.shape[0], im.shape[1]))		
+		if os.path.isfile(fname):
+			im = np.asarray(imread(fname) / 255, np.int32)
+			if len(im.shape) == 2:
+				im = im.reshape((-1, im.shape[0], im.shape[1]))	
+		elif os.path.isdir(fname):
+			pass
+			
 		return im
 
 	# load batches

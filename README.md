@@ -48,8 +48,8 @@ git clone https://github.com/RickyOta/CSML.git
 
 
 ### Usage
-1. Add images to ```CSML/data/```.
-1. Edit values in ```CSML/train_infer.ini``` or ```CSML/infer.ini```.  
+1. Add images to ```CSML/data/```. The format can be folder containing images or one tiff file.
+1. Edit values in ```CSML/train_infer.ini``` for training and inference or ```CSML/infer.ini``` for only inference.  
 1. Execute
 	```
 	python src/main.py train_infer.ini
@@ -60,3 +60,6 @@ git clone https://github.com/RickyOta/CSML.git
 	```	
 1. Inferred images are saved in ```CSML/result/```.
 
+### Details
+#### Format of images
+if you specify folder as output, inferred images are saved in the folder.

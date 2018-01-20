@@ -21,15 +21,22 @@ def infer_step(fname_infer="", fname_save="", fname_model="", thre_discard=1000,
 	print("test acc", "{:.3f}".format(data_model['testacc'][-1]))
 	
 	x_whole_inferred = infer_imwhole(model_infer, im, x_whole, thre_discard, wid_dilate, thre_fill)
+	
 	save_image(x_whole_inferred, fname_save)  
 	
-	print("done training.")
+	print("done infering.")
 	
 	
 if __name__ == '__main__':
 	# filenames for infer
+	"""
 	fname_infer = "../data/Cell_infer.tiff"
 	fname_save = "../result/Cell_inferred.tiff"
+	fname_model = "../data/model.pkl"
+	"""
+	
+	fname_infer = "../data/180112a.tiff"
+	fname_save = "../result/180112a_segmented.tiff"
 	fname_model = "../data/model.pkl"
 	
 	# parameters for infer

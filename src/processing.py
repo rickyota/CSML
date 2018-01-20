@@ -12,8 +12,9 @@ def infer_imwhole(model, im, x_whole, thre_discard, wid_dilate, thre_fill):
 		im_infer.append(im_infer_each)
 		if i % 10 == 9:
 			print("Done inferring", i + 1, "layers")
-	
-	im_infer = np.asarray(im_infer, np.float32)
+			
+	im_infer = [im * 255 for im in im_infer]
+	im_infer = np.asarray(im_infer, np.uint8)
 	
 	return im_infer
 

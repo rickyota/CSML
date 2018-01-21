@@ -1,6 +1,6 @@
 import numpy as np
 from cv2 import connectedComponents, connectedComponentsWithStats, watershed, dilate, distanceTransform, DIST_L2
-from skimage.io import imsave
+from PIL import Image
 from epoch import infer_epoch
 
 
@@ -142,5 +142,10 @@ def watershed_im(im):
 
 
 # save image
-def save_image(im, fname):
-	imsave(fname, im)
+def save_image(ims, fname):
+	ims = [Image.fromarray(im) for im in ims]
+	if len(ims == 1):
+		ims[0].save(fname, save_all=True, append_images=ims[1:])
+	else:
+		ims[0].save(fname, save_all=True)
+		

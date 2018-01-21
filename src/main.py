@@ -15,7 +15,7 @@ def Cell_Segmentation():
 	config.read(sys.argv[1])
 	
 	if 'train' in sys.argv[1] and 'infer' in sys.argv[1] and '.ini' in sys.argv[1]:
-		print("train and infer")
+		print("train and infer.")
 		fname_train = "data/" + config['paths']['filename train']
 		fname_label = "data/" + config['paths']['filename label']
 		fname_model = "data/" + config['paths']['filename model']
@@ -38,7 +38,7 @@ def Cell_Segmentation():
 		print("all done.")
 		
 	elif 'infer' in sys.argv[1] and '.ini' in sys.argv[1]:
-		print("infer")
+		print("infer.")
 		fname_model = "data/" + config['paths']['filename model']
 		fname_infer = "data/" + config['paths']['filename infer']
 		fname_save = "result/" + config['paths']['filename save']

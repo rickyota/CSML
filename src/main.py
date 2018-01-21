@@ -19,7 +19,7 @@ def Cell_Segmentation():
 		fname_label = "data/" + config['paths']['filename label']
 		fname_model = "data/" + config['paths']['filename model']
 		fname_infer = "data/" + config['paths']['filename infer']
-		fname_save = "data/" + config['paths']['filename save']
+		fname_save = "result/" + config['paths']['filename save']
 		
 		N_train = int(config['training parameters']['number train'])
 		N_test = int(config['training parameters']['number test'])
@@ -39,7 +39,7 @@ def Cell_Segmentation():
 	elif sys.argv[1] == 'infer.ini':
 		fname_model = "data/" + config['paths']['filename model']
 		fname_infer = "data/" + config['paths']['filename infer']
-		fname_save = "data/" + config['paths']['filename save']
+		fname_save = "result/" + config['paths']['filename save']
 		
 		thre_discard = int(config['inference parameters']['threshold discard'])
 		wid_dilate = int(config['inference parameters']['width dilate'])

@@ -5,9 +5,13 @@ from epoch import infer_epoch
 
 
 # infer whole images
-def infer_imwhole(model, im, x_whole, thre_discard, wid_dilate, thre_fill):
+def infer_imwhole(model, im, thre_discard, wid_dilate, thre_fill):
+	
+	numframe = im.get_numframe()
+	
 	im_infer = []
-	for i, x_whole_each in enumerate(x_whole):
+	for i in range(numframe):
+		x_whole_each = im.load_xwhole(i)
 		im_infer_each = infer_imwhole_each(model, im, x_whole_each, thre_discard, wid_dilate, thre_fill)
 		im_infer.append(im_infer_each)
 		if i % 10 == 9:

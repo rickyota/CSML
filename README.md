@@ -27,9 +27,6 @@ Return segmented images of fluorescent ones, inferred by FCN classifier optimize
 ## Author
 [R. Ota](https://github.com/RickyOta)
 
-
-
-
 ---
 
 ##  Usage of Codes
@@ -50,6 +47,7 @@ git clone https://github.com/RickyOta/CSML.git
 ### Usage
 1. Add images to ```CSML/data/```. The format can be folder containing images or one tiff file.
 1. Edit values in ```CSML/train_infer.ini``` for training and inference or ```CSML/infer.ini``` for only inference.  
+	you can edit ini file name as long as 'train' and/or 'infer' are included.
 1. Execute
 	```
 	python src/main.py train_infer.ini
@@ -63,3 +61,5 @@ git clone https://github.com/RickyOta/CSML.git
 ### Details
 #### Format of images
 if you specify folder as output, inferred images are saved in the folder.
+
+

@@ -18,7 +18,12 @@ def infer_imwhole(model, im, thre_discard, wid_dilate, thre_fill):
 			print("Done inferring", i + 1, "layers")
 			
 	im_infer = [im * 255 for im in im_infer]
-	im_infer = np.asarray(im_infer, np.uint8)
+	im_infer_tmp = []
+	for im in im_infer:
+		im[im != 255] = 0
+		im_infer_tmp.append(im)
+		
+	im_infer = np.asarray(im_infer_tmp, np.uint8)
 	
 	return im_infer
 
@@ -144,7 +149,7 @@ def watershed_im(im):
 # save image
 def save_image(ims, fname):
 	ims = [Image.fromarray(im) for im in ims]
-	if len(ims == 1):
+	if len(ims) == 1:
 		ims[0].save(fname, save_all=True, append_images=ims[1:])
 	else:
 		ims[0].save(fname, save_all=True)

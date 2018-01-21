@@ -5,14 +5,12 @@ import configparser
 import sys
 
 
+# start segmentation based on .ini
 def Cell_Segmentation():
 	
-	# assert len(sys.argv) == 2, "Expected: 2 args Actual: {0}.".format(len(sys.argv))
-	"""
-	if len(sys.argv)==2:
-		raise SyntaxError(""Expected: 2 args Actual: {0}.".format(len(sys.argv)))
-	else:
-	"""
+	if len(sys.argv) != 2:
+		raise SyntaxError("Expect: 2 args Actual: {0} args.".format(len(sys.argv)))
+
 	config = configparser.ConfigParser()
 	config.read(sys.argv[1])
 	

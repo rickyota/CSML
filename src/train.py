@@ -1,5 +1,4 @@
 from chainer.optimizers import Adam
-
 from imclass import ImClass
 from FCN_Classifier import FCN
 from epoch import train_epoch, test_epoch

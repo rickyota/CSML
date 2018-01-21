@@ -1,13 +1,17 @@
 import numpy as np
 from cv2 import connectedComponents, connectedComponentsWithStats, watershed, dilate, distanceTransform, DIST_L2
-from skimage.io import imsave
+from PIL import Image
 from epoch import infer_epoch
 
 
 # infer whole images
-def infer_imwhole(model, im, x_whole, thre_discard, wid_dilate, thre_fill):
+def infer_imwhole(model, im, thre_discard, wid_dilate, thre_fill):
+	
+	numframe = im.get_numframe()
+	
 	im_infer = []
-	for i, x_whole_each in enumerate(x_whole):
+	for i in range(numframe):
+		x_whole_each = im.load_xwhole(i)
 		im_infer_each = infer_imwhole_each(model, im, x_whole_each, thre_discard, wid_dilate, thre_fill)
 		im_infer.append(im_infer_each)
 		if i % 10 == 9:
@@ -138,5 +142,10 @@ def watershed_im(im):
 
 
 # save image
-def save_image(im, fname):
-	imsave(fname, im)
+def save_image(ims, fname):
+	ims = [Image.fromarray(im) for im in ims]
+	if len(ims == 1):
+		ims[0].save(fname, save_all=True, append_images=ims[1:])
+	else:
+		ims[0].save(fname, save_all=True)
+		

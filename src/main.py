@@ -14,12 +14,13 @@ def Cell_Segmentation():
 	config = configparser.ConfigParser()
 	config.read(sys.argv[1])
 	
-	if sys.argv[1] == 'train_infer.ini':
+	if 'train' in sys.argv[1] and 'infer' in sys.argv[1] and '.ini' in sys.argv[1]:
+		print("train and infer")
 		fname_train = "data/" + config['paths']['filename train']
 		fname_label = "data/" + config['paths']['filename label']
 		fname_model = "data/" + config['paths']['filename model']
 		fname_infer = "data/" + config['paths']['filename infer']
-		fname_save = "data/" + config['paths']['filename save']
+		fname_save = "result/" + config['paths']['filename save']
 		
 		N_train = int(config['training parameters']['number train'])
 		N_test = int(config['training parameters']['number test'])
@@ -36,10 +37,11 @@ def Cell_Segmentation():
 		infer_step(fname_infer=fname_infer, fname_save=fname_save, fname_model=fname_model, thre_discard=thre_discard, wid_dilate=wid_dilate, thre_fill=thre_fill)
 		print("all done.")
 		
-	elif sys.argv[1] == 'infer.ini':
+	elif 'infer' in sys.argv[1] and '.ini' in sys.argv[1]:
+		print("infer")
 		fname_model = "data/" + config['paths']['filename model']
 		fname_infer = "data/" + config['paths']['filename infer']
-		fname_save = "data/" + config['paths']['filename save']
+		fname_save = "result/" + config['paths']['filename save']
 		
 		thre_discard = int(config['inference parameters']['threshold discard'])
 		wid_dilate = int(config['inference parameters']['width dilate'])

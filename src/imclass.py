@@ -1,7 +1,6 @@
 import numpy as np
 from cv2 import connectedComponents
-from skimage.io import imread
-
+from PIL import Image
 import os.path
 
 
@@ -22,37 +21,74 @@ class ImClass:
 			self.imdata_pkl = self.make_pkl(im_x, im_t, N_test, N_train)
 
 		elif usetype == 'infer':
-			self.im_xwhole = self.load_imx(fname_i)
+			self.file_xwhole, self.numframe_xwhole = self.load_file(fname_i)
 	
 	# load images
 	def load_imx(self, fname):
 		if os.path.isfile(fname):
-			im = np.asarray(imread(fname, as_grey=True), np.float32) / 255.0
-			if len(im.shape) == 2:
-				im = im.reshape((-1, im.shape[0], im.shape[1]))
+			im, num = self.load_file(fname)
+			ims = []
+			for i in range(num):
+				im.seek(i)
+				im_tmp = np.asarray(im.convert('L')) / 255.0
+				ims.append(im_tmp)
 		elif os.path.isdir(fname):
 			pass
 		
-		return im
+		ims = np.asarray(ims)
+		
+		# if there is only one image
+		if len(im_tmp.shape) == 2:
+			im_tmp = im_tmp.reshape((-1, im_tmp.shape[0], im_tmp.shape[1]))
+		
+		return ims
 
 	# load contoured images
 	def load_imt(self, fname):
 		if os.path.isfile(fname):
-			im = np.asarray(imread(fname) / 255, np.int32)
-			if len(im.shape) == 2:
-				im = im.reshape((-1, im.shape[0], im.shape[1]))	
+			im, num = self.load_file(fname)
+			ims = []
+			for i in range(num):
+				im.seek(i)
+				im_tmp = np.asarray(im.convert('L')) / 255
+				ims.append(im_tmp)
 		elif os.path.isdir(fname):
 			pass
-			
-		return im
+		
+		if len(im_tmp.shape) == 2:
+			im_tmp = im_tmp.reshape((-1, im_tmp.shape[0], im_tmp.shape[1]))
+					
+		ims = np.asarray(ims, np.int32)
+		return ims
 
 	# load batches
 	def load_batch(self):
 		return self.imdata_pkl['x_train'], self.imdata_pkl['t_train'], self.imdata_pkl['x_test'], self.imdata_pkl['t_test']
 
-	# load whole images
-	def load_xwhole(self):
-		return self.im_xwhole
+	# load file and number of frame
+	def load_file(self, fname_i):
+		im = Image.open(fname_i)
+		num = 0
+		try:
+			while True:
+				im.seek(num)
+				num = num + 1
+		except EOFError:
+			pass
+		
+		return im, num
+	
+	# get number of frame
+	def get_numframe(self):
+		return self.numframe_xwhole
+
+	# load num-th whole image 
+	def load_xwhole(self, num):
+		im = self.file_xwhole
+		im.seek(num)
+		im_xwhole = np.asarray(im.convert('L'), np.float32) / 255.0
+		
+		return im_xwhole
 	
 	# make file that all images packed in 
 	def make_pkl(self, im_x, im_t, N_test, N_train):

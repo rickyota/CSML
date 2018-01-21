@@ -31,16 +31,15 @@ class ImClass:
 			for i in range(num):
 				im.seek(i)
 				im_tmp = np.asarray(im.convert('L')) / 255.0
-				if len(im_tmp.shape) == 2:
-					im_tmp = im_tmp.reshape((-1, im_tmp.shape[0], im_tmp.shape[1]))
 				ims.append(im_tmp)
-			
 		elif os.path.isdir(fname):
 			pass
 		
 		ims = np.asarray(ims)
-		print("x", ims.dtype)
-		print(ims.shape)
+		
+		# if there is only one image
+		if len(im_tmp.shape) == 2:
+			im_tmp = im_tmp.reshape((-1, im_tmp.shape[0], im_tmp.shape[1]))
 		
 		return ims
 
@@ -52,16 +51,14 @@ class ImClass:
 			for i in range(num):
 				im.seek(i)
 				im_tmp = np.asarray(im.convert('L')) / 255
-				if len(im_tmp.shape) == 2:
-					im_tmp = im_tmp.reshape((-1, im_tmp.shape[0], im_tmp.shape[1]))
 				ims.append(im_tmp)
-		
 		elif os.path.isdir(fname):
 			pass
 		
+		if len(im_tmp.shape) == 2:
+			im_tmp = im_tmp.reshape((-1, im_tmp.shape[0], im_tmp.shape[1]))
+					
 		ims = np.asarray(ims, np.int32)
-		print("t", ims.dtype)	
-		print(ims.shape)
 		return ims
 
 	# load batches

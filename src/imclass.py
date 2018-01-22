@@ -104,7 +104,6 @@ class ImClass:
 		
 	# save image
 	def save_image(self, ims, fname):
-		print(ims[0].dtype)
 		ims = [Image.fromarray(im) for im in ims]
 		if os.path.isfile(fname):
 			if len(ims) == 1:

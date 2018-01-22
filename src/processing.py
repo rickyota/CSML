@@ -5,24 +5,50 @@ from epoch import infer_epoch
 
 # infer whole images
 def infer_imwhole(model, im, thre_discard, wid_dilate, thre_fill):
+	"""
+	if im.type_infer == 'file':
+		numframe = im.get_numframe()
+		
+		im_infer = []
+		for i in range(numframe):
+			x_whole_each = im.load_xwhole(i)
+			im_infer_each = infer_imwhole_each(model, im, x_whole_each, thre_discard, wid_dilate, thre_fill)
+			im_infer.append(im_infer_each)
+			if i % 10 == 9:
+				print("Done inferring", i + 1, "/", numframe)
 	
-	numframe = im.get_numframe()
+	elif im.type_infer == 'folder':
+		fnames = im.fnames_infer
+		
+		im_infer = []
+		for i, filename in enumerate(fnames):
+			x_whole_each = im.load_one_image(filename)
+			im_infer_each = infer_imwhole_each(model, im, x_whole_each, thre_discard, wid_dilate, thre_fill)
+			im_infer.append(im_infer_each)
+			if i % 10 == 9:
+				print("Done inferring", i + 1, "/", len(fnames))
+	"""
 	
+	num_im = im.get_numframe() if im.type_infer == 'file' else len(im.fnames_infer)
 	im_infer = []
-	for i in range(numframe):
-		x_whole_each = im.load_xwhole(i)
+	for i in range(num_im):
+		if im.type_infer == 'file':
+			x_whole_each = im.load_xwhole(i)
+		else:
+			x_whole_each = im.load_one_image(im.fnames_infer[i])
 		im_infer_each = infer_imwhole_each(model, im, x_whole_each, thre_discard, wid_dilate, thre_fill)
 		im_infer.append(im_infer_each)
-		if i % 10 == 9:
-			print("Done inferring", i + 1, "layers")
+		if i % 5 == 4:
+			print("Done inferring", i + 1, "/", num_im)
 			
 	im_infer = [im * 255 for im in im_infer]
+	# TODO: modified
 	im_infer_tmp = []
 	for im in im_infer:
 		im[im != 255] = 0
 		im_infer_tmp.append(im)
 		
-	im_infer = np.asarray(im_infer_tmp, np.uint8)
+	im_infer = [np.asarray(im, np.uint8) for im in im_infer]
 	
 	return im_infer
 

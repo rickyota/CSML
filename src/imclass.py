@@ -23,7 +23,15 @@ class ImClass:
 			self.imdata_pkl = self.make_pkl(im_x, im_t, N_test, N_train)
 
 		elif usetype == 'infer':
-			self.file_xwhole, self.numframe_xwhole = self.load_file(fname_i)
+			if os.path.isfile(fname_i):
+				self.type_infer = 'file'
+				self.file_xwhole, self.numframe_xwhole = self.load_file(fname_i)
+			elif os.path.isdir(fname_i):
+				self.type_infer = 'folder'
+				self.fnames_infer = self.get_listdir(fname_i)
+				self.fnames_onlyname_infer = self.get_listdir_onlyname(fname_i)
+				
+			else: raise FileNotFoundError("file or folder not found.")
 	
 	# load images
 	def load_imx(self, fname):
@@ -35,15 +43,12 @@ class ImClass:
 				im_tmp = np.asarray(im.convert('L')) / 255.0
 				ims.append(im_tmp)
 		elif os.path.isdir(fname):
-			self.fnames = os.listdir(fname)
-			self.fnames = list(filter(lambda f: f[0] != ".", self.fnames))
-			
+			self.fnames = self.get_listdir(fname)
 			if not self.fnames: raise FileNotFoundError("no files in the folder: {0}.".format(fname))
 			
 			ims = []
 			for filename in self.fnames:
-				im = self.load_one_file(fname + "/" + filename)
-				im_tmp = np.asarray(im.convert('L')) / 255.0
+				im_tmp = self.load_one_image(filename)
 				ims.append(im_tmp)
 		else: raise FileNotFoundError("file or folder not found.")
 		
@@ -65,15 +70,12 @@ class ImClass:
 				im_tmp = np.asarray(im.convert('L')) / 255
 				ims.append(im_tmp)
 		elif os.path.isdir(fname):
-			self.fnames = os.listdir(fname)
-			self.fnames = list(filter(lambda f: f[0] != ".", self.fnames))
-			
+			self.fnames = self.get_listdir(fname)
 			if not self.fnames: raise FileNotFoundError("no files in the folder: {0}.".format(fname))
 			
 			ims = []
 			for filename in self.fnames:
-				im = self.load_one_file(fname + "/" + filename)
-				im_tmp = np.asarray(im.convert('L')) / 255
+				im_tmp = self.load_one_image(filename)
 				ims.append(im_tmp)
 		else:
 			raise FileNotFoundError("file or folder not found.")
@@ -89,27 +91,42 @@ class ImClass:
 	def load_batch(self):
 		return self.imdata_pkl['x_train'], self.imdata_pkl['t_train'], self.imdata_pkl['x_test'], self.imdata_pkl['t_test']
 	
+	def get_listdir(self, fname):
+		fnames = os.listdir(fname)
+		fnames = list(filter(lambda f: f[0] != ".", fnames))
+		fnames = [fname + "/" + filename for filename in fnames]
+		return fnames
+	
+	def get_listdir_onlyname(self, fname):
+		fnames = os.listdir(fname)
+		fnames = list(filter(lambda f: f[0] != ".", fnames))
+		return fnames
+		
 	# save image
 	def save_image(self, ims, fname):
+		print(ims[0].dtype)
 		ims = [Image.fromarray(im) for im in ims]
 		if os.path.isfile(fname):
 			if len(ims) == 1:
-				ims[0].save(fname, save_all=True, append_images=ims[1:])
-			else:
 				ims[0].save(fname, save_all=True)
+			else:
+				ims[0].save(fname, save_all=True, append_images=ims[1:])
+				
 		else:
 			if os.path.isdir(fname):
 				warnings.warn("folder is being overwritten.")
 			else:
 				os.mkdir(fname)
-			
-			for im, filename in zip(ims, self.fnames):
-				print("fname", fname, " ", filename)
-				im.save(fname + "/" + filename, save_all=True)
 		
-	# load one file
-	def load_one_file(self, fname):
-		im = Image.open(fname)
+			fnames = self.fnames_onlyname_infer
+			fnames = [fname + "/" + filename for filename in fnames]
+			for im, filename in zip(ims, fnames):
+				im.save(filename)
+
+	# load image from non-tiff file
+	def load_one_image(self, fname):
+		fim = Image.open(fname)
+		im = np.asarray(fim.convert('L')) / 255.0
 		return im
 				
 	# load file and number of frame

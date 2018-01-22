@@ -1,5 +1,5 @@
 from imclass import ImClass
-from processing import infer_imwhole, save_image
+from processing import infer_imwhole
 
 import pickle
 
@@ -20,8 +20,7 @@ def infer_step(fname_infer="", fname_save="", fname_model="", thre_discard=1000,
 	print("test acc", "{:.3f}".format(data_model['testacc'][-1]))
 	
 	x_whole_inferred = infer_imwhole(model_infer, im, thre_discard, wid_dilate, thre_fill)
-	
-	save_image(x_whole_inferred, fname_save)  
+	im.save_image(x_whole_inferred, fname_save)  
 	
 	print("done infering.")
 	
@@ -32,12 +31,6 @@ if __name__ == '__main__':
 	fname_infer = "../data/embryos_infer.tiff"
 	fname_save = "../result/embryos_inferred.tiff"
 	fname_model = "../data/model.pkl"
-	
-	"""
-	fname_infer = "../data/180112a.tiff"
-	fname_save = "../result/180112a_segmented.tiff"
-	fname_model = "../data/model.pkl"
-	"""
 	
 	# parameters for infer
 	thre_discard = 1000

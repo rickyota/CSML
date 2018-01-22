@@ -1,6 +1,5 @@
 import numpy as np
 from cv2 import connectedComponents, connectedComponentsWithStats, watershed, dilate, distanceTransform, DIST_L2
-from PIL import Image
 from epoch import infer_epoch
 
 
@@ -146,6 +145,7 @@ def watershed_im(im):
 	return im_wsd
 
 
+"""
 # save image
 def save_image(ims, fname):
 	ims = [Image.fromarray(im) for im in ims]
@@ -154,3 +154,4 @@ def save_image(ims, fname):
 	else:
 		ims[0].save(fname, save_all=True)
 		
+"""

@@ -42,6 +42,7 @@ def infer_imwhole(model, im, thre_discard, wid_dilate, thre_fill):
 			print("Done inferring", i + 1, "/", num_im)
 			
 	im_infer = [im * 255 for im in im_infer]
+	
 	# TODO: modified
 	im_infer_tmp = []
 	for im in im_infer:

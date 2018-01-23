@@ -20,6 +20,7 @@ class ImClass:
 		
 		if usetype == 'train':
 			im_x, im_t = self.load_imx(fname_x), self.load_imt(fname_t)
+			if im_x.shape[0] != im_t.shape[0]: raise ValueError("Number of images in two folders or files are different: {} and {1}".format(fname_x, fname_t)) 
 			self.imdata_pkl = self.make_pkl(im_x, im_t, N_test, N_train)
 
 		elif usetype == 'infer':
@@ -31,7 +32,18 @@ class ImClass:
 				self.fnames_infer = self.get_listdir(fname_i)
 				self.fnames_onlyname_infer = self.get_listdir_onlyname(fname_i)
 				
-			else: raise FileNotFoundError("file or folder not found.")
+			else: raise FileNotFoundError("No file or folder found: {}.".format(fname_i))
+	
+	"""
+	# TODO: way to access vairable
+	def get_hgh(self):
+		return self.hgh
+	"""	
+
+	def change_hgh_wid(self, shape):
+		self.hgh, self.wid = shape[0], shape[1]
+		self.shapex = [1, self.hgh, self.wid]
+		self.shapet = [self.hgh, self.wid]
 	
 	# load images
 	def load_imx(self, fname):
@@ -44,13 +56,13 @@ class ImClass:
 				ims.append(im_tmp)
 		elif os.path.isdir(fname):
 			self.fnames = self.get_listdir(fname)
-			if not self.fnames: raise FileNotFoundError("no files in the folder: {0}.".format(fname))
+			if not self.fnames: raise FileNotFoundError("No files in the folder: {}.".format(fname))
 			
 			ims = []
 			for filename in self.fnames:
 				im_tmp = self.load_one_image(filename)
 				ims.append(im_tmp)
-		else: raise FileNotFoundError("file or folder not found.")
+		else: raise FileNotFoundError("No file or folder not found: {}.".format(fname))
 		
 		ims = np.asarray(ims, np.float32)
 		
@@ -71,14 +83,13 @@ class ImClass:
 				ims.append(im_tmp)
 		elif os.path.isdir(fname):
 			self.fnames = self.get_listdir(fname)
-			if not self.fnames: raise FileNotFoundError("no files in the folder: {0}.".format(fname))
+			if not self.fnames: raise FileNotFoundError("No files in the folder: {}.".format(fname))
 			
 			ims = []
 			for filename in self.fnames:
 				im_tmp = self.load_one_image(filename)
 				ims.append(im_tmp)
-		else:
-			raise FileNotFoundError("file or folder not found.")
+		else: raise FileNotFoundError("No file or folder found: {}.".format(fname))
 		
 		ims = np.asarray(ims, np.int32)
 		
@@ -105,41 +116,53 @@ class ImClass:
 	# save image
 	def save_image(self, ims, fname):
 		ims = [Image.fromarray(im) for im in ims]
-		if os.path.isfile(fname):
-			if len(ims) == 1:
-				ims[0].save(fname, save_all=True)
-			else:
-				ims[0].save(fname, save_all=True, append_images=ims[1:])
-				
-		else:
+		if not os.path.splitext(fname)[1]:
 			if os.path.isdir(fname):
-				warnings.warn("folder is being overwritten.")
+				warnings.warn("Folder is being overwritten: {}.".format(fname))
 			else:
 				os.mkdir(fname)
 		
 			fnames = self.fnames_onlyname_infer
 			fnames = [fname + "/" + filename for filename in fnames]
-			for im, filename in zip(ims, fnames):
-				im.save(filename)
+			try:
+				for im, filename in zip(ims, fnames):
+					im.save(filename)
+			except Exception as e:
+				raise Exception(e, "Cannot save images to folder: {}".format(fname))
 
+		else:
+			try:
+				if len(ims) == 1:
+					ims[0].save(fname, save_all=True)
+				else:
+					ims[0].save(fname, save_all=True, append_images=ims[1:])
+			except Exception as e:
+				raise Exception(e, "Cannot save images to file: {}".format(fname))
+			
 	# load image from non-tiff file
 	def load_one_image(self, fname):
-		fim = Image.open(fname)
+		try:
+			fim = Image.open(fname)
+		except Exception as e:
+			raise IOError(e, "Cannot open file: {}".format(fname))
 		im = np.asarray(fim.convert('L')) / 255.0
 		return im
 				
 	# load file and number of frame
 	def load_file(self, fname):
-		im = Image.open(fname)
+		try:
+			fim = Image.open(fname)
+		except Exception as e:
+			raise IOError(e, "Cannot open file: {}".format(fname))
 		num = 0
 		try:
 			while True:
-				im.seek(num)
+				fim.seek(num)
 				num = num + 1
 		except EOFError:
 			pass
 		
-		return im, num
+		return fim, num
 	
 	# get number of frame
 	def get_numframe(self):
@@ -167,6 +190,7 @@ class ImClass:
 		for i, (im_x_each, im_t_each) in enumerate(zip(im_x, im_t)):
 			bound = self.getBound(im_t_each)
 			xs, ys = np.where(bound == True)		
+			if len(xs) < N_each: raise ValueError("Training image set cannot be made. Decrease 'number train' or spread contoured region in label images.")
 			perm = np.random.permutation(xs.shape[0])
 			xs, ys = xs[perm[0:2 * N_each]], ys[perm[0:2 * N_each]]
 			

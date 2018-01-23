@@ -2,6 +2,7 @@ from imclass import ImClass
 from processing import infer_imwhole
 
 import pickle
+import os
 
 
 # inferrence step
@@ -9,17 +10,24 @@ def infer_step(fname_infer="", fname_save="", fname_model="", thre_discard=1000,
 	
 	print("start inferring.")
 	
-	im = ImClass('infer', fname_i=fname_infer)
+	im = ImClass('infer', fname_i=fname_infer) 
 	
-	with open(fname_model, 'rb') as p:
-		data_model = pickle.load(p)
+	if not os.path.isfile(fname_model): raise FileNotFoundError("Model file not found: {}.".format(fname_model))
+	try:
+		with open(fname_model, 'rb') as p:
+			data_model = pickle.load(p)
+	except Exception as e:
+		raise Exception(e, "Cannot open model file: {}".fotmat(fname_model))
+		
 	model_infer = data_model['model']
 	print("info of FCN Classifier: ")
 	print("hgh,wid", data_model['shape'])
-	im.hgh, im.wid = data_model['shape']
+	im.change_hgh_wid(data_model['shape'])
 	print("test acc", "{:.3f}".format(data_model['testacc'][-1]))
 	
-	x_whole_inferred = infer_imwhole(model_infer, im, thre_discard, wid_dilate, thre_fill)
+	try:
+		x_whole_inferred = infer_imwhole(model_infer, im, thre_discard, wid_dilate, thre_fill)
+	except: MemoryError("Too many images to be inferred. Decrease number of images.")
 	im.save_image(x_whole_inferred, fname_save)  
 	
 	print("done infering.")

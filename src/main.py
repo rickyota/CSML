@@ -3,6 +3,7 @@ from infer import infer_step
 
 import configparser
 import sys
+import os
 
 
 # start segmentation based on .ini
@@ -14,7 +15,9 @@ def Cell_Segmentation():
 	config = configparser.ConfigParser()
 	config.read(sys.argv[1])
 	
-	if 'train' in sys.argv[1] and 'infer' in sys.argv[1] and '.ini' in sys.argv[1]:
+	if not os.path.exists(sys.argv[1]): raise FileNotFoundError("no ini file found: {}.".format(sys.argv[1]))
+	
+	if 'train_infer' == sys.argv[1][0:11] and '.ini' in sys.argv[1]:
 		print("train and infer.")
 		fname_train = "data/" + config['paths']['filename train']
 		fname_label = "data/" + config['paths']['filename label']
@@ -37,7 +40,7 @@ def Cell_Segmentation():
 		infer_step(fname_infer=fname_infer, fname_save=fname_save, fname_model=fname_model, thre_discard=thre_discard, wid_dilate=wid_dilate, thre_fill=thre_fill)
 		print("all done.")
 		
-	elif 'infer' in sys.argv[1] and '.ini' in sys.argv[1]:
+	elif 'infer' in sys.argv[1][0:5] and '.ini' in sys.argv[1]:
 		print("infer.")
 		fname_model = "data/" + config['paths']['filename model']
 		fname_infer = "data/" + config['paths']['filename infer']

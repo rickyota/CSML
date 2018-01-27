@@ -8,7 +8,8 @@ import traceback
 
 
 # inferrence step
-def infer_step(fname_infer="", fname_save="", fname_model="", thre_discard=1000, wid_dilate=1, thre_fill=1):
+def infer_step(fname_infer="", fname_save="", fname_model="",
+               thre_discard=1000, wid_dilate=1, thre_fill=1):
 
     print("start inferring.")
 

@@ -1,7 +1,7 @@
 # CSML    ver. 1.0.0
 Cell Segmenter using Machine Learning.  
-Software based on this code is distributed [(here)](https://github.com/RickyOta/CSML/releases).  
-Details are [(here)](https://github.com/RickyOta/CSML/wiki).
+Software based on this code is distributed on [(Releases)](https://github.com/RickyOta/CSML/releases).  
+Details are on [(Wiki)](https://github.com/RickyOta/CSML/wiki).
 
 ## Description
 Return segmented images of fluorescent inference images, inferred by FCN classifier.  
@@ -26,7 +26,8 @@ Classifier is optimized by training and corresponding label images.
 
 
 ## Author
-[R. Ota](https://github.com/RickyOta)
+[R. Ota](https://github.com/RickyOta)  
+[R. Nakabayashi](https://github.com/ryought) (for help of creating software)
 
 ---
 

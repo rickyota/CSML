@@ -2,6 +2,8 @@ import numpy as np
 from cv2 import connectedComponents, connectedComponentsWithStats, watershed, dilate, distanceTransform, DIST_L2
 from epoch import infer_epoch
 
+from matplotlib import pyplot as plt
+
 
 # infer whole images
 def infer_imwhole(model, im, thre_discard, wid_dilate, thre_fill):
@@ -57,6 +59,10 @@ def infer_imwhole(model, im, thre_discard, wid_dilate, thre_fill):
 # infer a whole image
 def infer_imwhole_each(model, im, x_whole, thre_discard, wid_dilate, thre_fill):
 	im_infer_each = combine_im(model, im, x_whole)
+	
+	# plt.imshow(im_infer_each)
+	# plt.pause(10)
+	
 	im_infer_each = postprocessing(im_infer_each, thre_discard, wid_dilate, thre_fill)
 	return im_infer_each	
 
@@ -88,17 +94,22 @@ def each_im(model, im, x_whole, imtype):
 	for i in range(int((d / 2) * im.hgh), x_whole.shape[0] - im.hgh + 1, im.hgh):
 		for j in range(int((d / 2) * im.wid), x_whole.shape[1] - im.wid + 1, im.wid):
 			x_batch.append(x_whole[i:i + im.hgh, j:j + im.wid])
+			# plt.imshow(x_whole[i:i + im.hgh, j:j + im.wid])
+			# plt.pause(1)
+			
 			k = k + 1
 			if k % 100 == 0:
 				x_batch = np.asarray(x_batch, np.float32)
-				x_batch = x_batch.reshape(np.append(-1, im.shapex))
+				# x_batch = x_batch.reshape(np.append(-1, im.shapex))
+				x_batch = x_batch.reshape([-1] + im.shapex)
 				x_result_t = infer_epoch(model, x_batch)
 				x_result.extend(x_result_t)
 				x_batch = []
 				k = 0
 	if k != 0:
 		x_batch = np.asarray(x_batch, np.float32)
-		x_batch = x_batch.reshape(np.append(-1, im.shapex))
+		# x_batch = x_batch.reshape(np.append(-1, im.shapex))
+		x_batch = x_batch.reshape([-1] + im.shapex)
 		x_result_t = infer_epoch(model, x_batch)
 		x_result.extend(x_result_t)
 	
@@ -108,18 +119,20 @@ def each_im(model, im, x_whole, imtype):
 		for j in range(int((d / 2) * im.wid), x_whole.shape[1] - im.wid + 1, im.wid):	
 			im_result[i:i + im.hgh, j:j + im.wid] = x_result[k]
 			k = k + 1
+			
+			# plt.imshow(x_result[k])
+			# plt.pause(1)
 
 	return im_result
 
 
 # get last image
 def postprocessing(im, thre_discard, wid_dilate, thre_fill):
-	# params=1000, 1, 1
-	# discard <=1000px
+	# discard <= thre_discard
 	im = discard(im, thre_discard)
-	# dilate 1px
+	# dilate wid_dilate
 	im = dilate_im(im, wid_dilate)
-	# fill <=1px	
+	# fill <= thre_fill
 	im = fill(im, thre_fill)
 	# watershed		
 	im = watershed_im(im)

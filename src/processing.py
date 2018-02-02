@@ -5,29 +5,6 @@ from epoch import infer_epoch
 
 # infer whole images
 def infer_imwhole(model, cim, thre_discard, wid_dilate, thre_fill):
-    """
-    if cim.type_infer == 'file':
-            numframe = cim.get_numframe()
-
-            im_infer = []
-            for i in range(numframe):
-                    x_whole_each = cim.load_xwhole(i)
-                    im_infer_each = infer_imwhole_each(model, cim, x_whole_each, thre_discard, wid_dilate, thre_fill)
-                    im_infer.append(im_infer_each)
-                    if i % 10 == 9:
-                            print("Done inferring", i + 1, "/", numframe)
-
-    elif cim.type_infer == 'folder':
-            fnames = cim.fnames_infer
-
-            im_infer = []
-            for i, filename in enumerate(fnames):
-                    x_whole_each = cim.load_one_image(filename)
-                    im_infer_each = infer_imwhole_each(model, cim, x_whole_each, thre_discard, wid_dilate, thre_fill)
-                    im_infer.append(im_infer_each)
-                    if i % 10 == 9:
-                            print("Done inferring", i + 1, "/", len(fnames))
-    """
 
     num_im = cim.get_numframe() if cim.type_infer == 'file' else len(cim.fnames_infer)
     im_infer = []

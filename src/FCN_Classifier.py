@@ -65,12 +65,6 @@ class FCN(Chain):
             x_batch_stan = x_batch_stan.astype(np.float32)
         except Exception as e:
             print("Got exception.", e)
-            """
-			x_batch_st_med = np.max(x_batch.data, axis=(2, 3)) / 2
-			x_batch_st_med = x_batch_st_med.reshape([x_batch.shape[0], x_batch.shape[1], 1, 1])
-			x_batch_sig = self.im_sigmoid(x_batch.data, x_batch_st_med, 1)
-			x_batch_stan = x_batch_sig.astype(np.float32)
-			"""
             x_batch_stan = x_batch.data.astype(np.float32)
         return x_batch_stan
 

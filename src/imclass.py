@@ -229,6 +229,7 @@ class ImClass:
             fnames = [fname + "/" + filename for filename in fnames]
             try:
                 for im, filename in zip(ims, fnames):
+                    filename = os.path.splitext(filename)[0] + '.png'
                     if os.path.isfile(filename):
                         warnings.warn(
                             "Files is being overwritten: {}.".format(filename))

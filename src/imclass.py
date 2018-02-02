@@ -222,27 +222,30 @@ class ImClass:
     def save_image(self, ims, fname):
         ims = [Image.fromarray(im) for im in ims]
         if not os.path.splitext(fname)[1]:
-            if os.path.isdir(fname):
-                warnings.warn(
-                    "Files may be being overwritten in: {}.".format(fname))
-            else:
+            if not os.path.isdir(fname):
                 os.mkdir(fname)
 
             fnames = self.fnames_onlyname_infer
             fnames = [fname + "/" + filename for filename in fnames]
             try:
                 for im, filename in zip(ims, fnames):
+                    if os.path.isfile(filename):
+                        warnings.warn(
+                            "Files is being overwritten: {}.".format(filename))
                     im.save(filename)
             except Exception as e:
                 raise Exception(
-                    e, "Cannot save images to folder: {}".format(fname))
+                    e, "Cannot save images into folder: {}".format(fname))
 
         else:
             try:
+                if os.path.isfile(filename):
+                    warnings.warn(
+                        "Files is being overwritten: {}.".format(filename))
                 if len(ims) == 1:
                     ims[0].save(fname, save_all=True)
                 else:
                     ims[0].save(fname, save_all=True, append_images=ims[1:])
             except Exception as e:
                 raise Exception(
-                    e, "Cannot save images to file: {}".format(fname))
+                    e, "Cannot save images into file: {}".format(fname))

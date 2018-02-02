@@ -2,8 +2,6 @@ import numpy as np
 from cv2 import connectedComponents, connectedComponentsWithStats, watershed, dilate, distanceTransform, DIST_L2
 from epoch import infer_epoch
 
-from matplotlib import pyplot as plt
-
 
 # infer whole images
 def infer_imwhole(model, cim, thre_discard, wid_dilate, thre_fill):
@@ -92,12 +90,6 @@ def combine_im(model, cim, x_whole):
     iml = each_im(model, cim, x_whole, 'l')
     ims = each_im(model, cim, x_whole, 's')
 
-    plt.imshow(iml)
-    plt.pause(10)
-
-    plt.imshow(ims)
-    plt.pause(10)
-
     im_infer = np.maximum(iml, ims)
     im_infer = im_infer[0:shape_ori[0], 0:shape_ori[1]]
 
@@ -117,8 +109,6 @@ def each_im(model, cim, x_whole, imtype):
     for i in range(int((d / 2) * cim.hgh), x_whole.shape[0] - cim.hgh + 1, cim.hgh):
         for j in range(int((d / 2) * cim.wid), x_whole.shape[1] - cim.wid + 1, cim.wid):
             x_batch.append(x_whole[i:i + cim.hgh, j:j + cim.wid])
-            # plt.imshow(x_whole[i:i + cim.hgh, j:j + cim.wid])
-            # plt.pause(1)
 
             k += 1
             if k % 100 == 0:
@@ -140,9 +130,6 @@ def each_im(model, cim, x_whole, imtype):
         for j in range(int((d / 2) * cim.wid), x_whole.shape[1] - cim.wid + 1, cim.wid):
             im_result[i:i + cim.hgh, j:j + cim.wid] = x_result[k]
             k += 1
-
-            # plt.imshow(x_result[k])
-            # plt.pause(1)
 
     return im_result
 
@@ -204,15 +191,3 @@ def watershed_im(im):
     im_wsd = (im_wsd == -1)
     im_wsd = np.asarray(im_wsd, np.uint8)
     return im_wsd
-
-
-"""
-# save image
-def save_image(ims, fname):
-	ims = [Image.fromarray(im) for im in ims]
-	if len(ims) == 1:
-		ims[0].save(fname, save_all=True, append_images=ims[1:])
-	else:
-		ims[0].save(fname, save_all=True)
-		
-"""

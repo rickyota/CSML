@@ -14,7 +14,7 @@ def train_step(fname_train="", fname_label="", fname_model="",
     print("start training.")
 
     cim = ImClass('train', fname_x=fname_train, fname_t=fname_label,
-                 N_train=N_train, N_test=N_test, hgh=hgh, wid=wid)
+                  N_train=N_train, N_test=N_test, hgh=hgh, wid=wid)
     x_train, t_train, x_test, t_test = cim.load_batch()
     print("shapes:", x_train.shape, t_train.shape, x_test.shape, t_test.shape)
 
@@ -26,7 +26,7 @@ def train_step(fname_train="", fname_label="", fname_model="",
 
     # Learning loop
     for epoch in range(1, N_epoch + 1):
-        print("epoch: ", epoch)
+        print("epoch: ", epoch, "/", N_epoch)
         # training
         (train_loss_t, train_acc_t) = train_epoch(
             model, optimizer, x_train, t_train, batchsize)

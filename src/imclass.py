@@ -141,14 +141,15 @@ class ImClass:
                     if count >= N_each:
                         break
 
-        x_tmp, t_tmp = \
-            np.asarray(x_tmp, np.float32), np.asarray(t_tmp, np.int32)
-        x_tmp, t_tmp = x_tmp.reshape(
-            [-1] + self.shapex), t_tmp.reshape([-1] + self.shapet)
+        x_tmp = np.asarray(x_tmp, np.float32)
+        t_tmp = np.asarray(t_tmp, np.int32)
+        x_tmp = x_tmp.reshape([-1] + self.shapex)
+        t_tmp = t_tmp.reshape([-1] + self.shapet)
 
-        x_train, t_train = x_tmp[0:N_train], t_tmp[0:N_train]
-        x_test, t_test = \
-            x_tmp[N_train:N_train + N_test], t_tmp[N_train:N_train + N_test]
+        x_train = x_tmp[0:N_train]
+        t_train = t_tmp[0:N_train]
+        x_test = x_tmp[N_train:N_train + N_test]
+        t_test = t_tmp[N_train:N_train + N_test]
 
         return x_train, t_train, x_test, t_test
 
@@ -222,7 +223,8 @@ class ImClass:
         ims = [Image.fromarray(im) for im in ims]
         if not os.path.splitext(fname)[1]:
             if os.path.isdir(fname):
-                warnings.warn("Folder is being overwritten: {}.".format(fname))
+                warnings.warn(
+                    "Files may be being overwritten in: {}.".format(fname))
             else:
                 os.mkdir(fname)
 

@@ -120,15 +120,15 @@ def each_im(model, cim, x_whole, imtype):
             # plt.imshow(x_whole[i:i + cim.hgh, j:j + cim.wid])
             # plt.pause(1)
 
-            k = k + 1
+            k += 1
             if k % 100 == 0:
                 x_batch = np.asarray(x_batch, np.float32)
                 x_batch = x_batch.reshape([-1] + cim.shapex)
                 x_result_t = infer_epoch(model, x_batch)
                 x_result.extend(x_result_t)
                 x_batch = []
-                k = 0
-    if k != 0:
+
+    if k % 100 != 0:
         x_batch = np.asarray(x_batch, np.float32)
         x_batch = x_batch.reshape([-1] + cim.shapex)
         x_result_t = infer_epoch(model, x_batch)
@@ -139,7 +139,7 @@ def each_im(model, cim, x_whole, imtype):
     for i in range(int((d / 2) * cim.hgh), x_whole.shape[0] - cim.hgh + 1, cim.hgh):
         for j in range(int((d / 2) * cim.wid), x_whole.shape[1] - cim.wid + 1, cim.wid):
             im_result[i:i + cim.hgh, j:j + cim.wid] = x_result[k]
-            k = k + 1
+            k += 1
 
             # plt.imshow(x_result[k])
             # plt.pause(1)
@@ -168,7 +168,7 @@ def discard(im, threshold):
     k = 0
     for i in range(1, n):
         if stat[i][4] > threshold:
-            k = k + 1
+            k += 1
             im_discard[im_label == i] = 1
     return im_discard
 

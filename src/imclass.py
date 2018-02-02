@@ -137,18 +137,18 @@ class ImClass:
                 if self._isInBound(bound, x, y):
                     im_x_tmp = im_x_each[x:x + self.hgh, y:y + self.wid]
                     x_tmp.append(im_x_tmp), t_tmp.append(im_t_tmp)
-                    count = count + 1
+                    count += 1
                     if count >= N_each:
                         break
 
-        x_tmp, t_tmp = np.asarray(
-            x_tmp, np.float32), np.asarray(t_tmp, np.int32)
+        x_tmp, t_tmp = \
+            np.asarray(x_tmp, np.float32), np.asarray(t_tmp, np.int32)
         x_tmp, t_tmp = x_tmp.reshape(
             [-1] + self.shapex), t_tmp.reshape([-1] + self.shapet)
 
         x_train, t_train = x_tmp[0:N_train], t_tmp[0:N_train]
-        x_test, t_test = x_tmp[N_train:N_train +
-                               N_test], t_tmp[N_train:N_train + N_test]
+        x_test, t_test = \
+            x_tmp[N_train:N_train + N_test], t_tmp[N_train:N_train + N_test]
 
         return x_train, t_train, x_test, t_test
 
@@ -162,7 +162,8 @@ class ImClass:
 
     # judge based on criteria
     def _isInBound(self, bound, x, y):
-        return bound[x + self.hgh, y] and bound[x, y + self.wid] and bound[x + self.hgh, y + self.wid]
+        return bound[x + self.hgh, y] and bound[x, y + self.wid] \
+            and bound[x + self.hgh, y + self.wid]
 
     # load num-th whole image
     def load_xwhole(self, num):

@@ -13,9 +13,9 @@ def train_step(fname_train="", fname_label="", fname_model="",
 
     print("start training.")
 
-    im = ImClass('train', fname_x=fname_train, fname_t=fname_label,
+    cim = ImClass('train', fname_x=fname_train, fname_t=fname_label,
                  N_train=N_train, N_test=N_test, hgh=hgh, wid=wid)
-    x_train, t_train, x_test, t_test = im.load_batch()
+    x_train, t_train, x_test, t_test = cim.load_batch()
     print("shapes:", x_train.shape, t_train.shape, x_test.shape, t_test.shape)
 
     model = FCN()

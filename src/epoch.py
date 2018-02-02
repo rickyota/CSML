@@ -21,7 +21,7 @@ def train_epoch(model, optimizer, x_train, t_train, batchsize=100):
 
         sum_loss += float(loss.data) * batchsize
         sum_acc += float(acc.data) * batchsize
-        if i % 10000 == 0:
+        if i % 5000 == 0:
             print("training:", i, "loss:", "{:.3f}".format(
                 float(loss.data)), "acc:", "{:.3f}".format(float(acc.data)))
 

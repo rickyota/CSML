@@ -6,63 +6,73 @@ from matplotlib import pyplot as plt
 
 
 # infer whole images
-def infer_imwhole(model, im, thre_discard, wid_dilate, thre_fill):
+def infer_imwhole(model, cim, thre_discard, wid_dilate, thre_fill):
     """
-    if im.type_infer == 'file':
-            numframe = im.get_numframe()
+    if cim.type_infer == 'file':
+            numframe = cim.get_numframe()
 
             im_infer = []
             for i in range(numframe):
-                    x_whole_each = im.load_xwhole(i)
-                    im_infer_each = infer_imwhole_each(model, im, x_whole_each, thre_discard, wid_dilate, thre_fill)
+                    x_whole_each = cim.load_xwhole(i)
+                    im_infer_each = infer_imwhole_each(model, cim, x_whole_each, thre_discard, wid_dilate, thre_fill)
                     im_infer.append(im_infer_each)
                     if i % 10 == 9:
                             print("Done inferring", i + 1, "/", numframe)
 
-    elif im.type_infer == 'folder':
-            fnames = im.fnames_infer
+    elif cim.type_infer == 'folder':
+            fnames = cim.fnames_infer
 
             im_infer = []
             for i, filename in enumerate(fnames):
-                    x_whole_each = im.load_one_image(filename)
-                    im_infer_each = infer_imwhole_each(model, im, x_whole_each, thre_discard, wid_dilate, thre_fill)
+                    x_whole_each = cim.load_one_image(filename)
+                    im_infer_each = infer_imwhole_each(model, cim, x_whole_each, thre_discard, wid_dilate, thre_fill)
                     im_infer.append(im_infer_each)
                     if i % 10 == 9:
                             print("Done inferring", i + 1, "/", len(fnames))
     """
 
-    num_im = im.get_numframe() if im.type_infer == 'file' else len(im.fnames_infer)
+    num_im = cim.get_numframe() if cim.type_infer == 'file' else len(cim.fnames_infer)
     im_infer = []
     for i in range(num_im):
-        if im.type_infer == 'file':
-            x_whole_each = im.load_xwhole(i)
+        if cim.type_infer == 'file':
+            x_whole_each = cim.load_xwhole(i)
         else:
-            x_whole_each = im.load_one_image(im.fnames_infer[i])
+            x_whole_each = cim.load_one_image(cim.fnames_infer[i])
         im_infer_each = infer_imwhole_each(
-            model, im, x_whole_each, thre_discard, wid_dilate, thre_fill)
+            model, cim, x_whole_each, thre_discard, wid_dilate, thre_fill)
         im_infer.append(im_infer_each)
         if i % 5 == 4:
             print("Done inferring", i + 1, "/", num_im)
 
-    im_infer = [im * 255 for im in im_infer]
+    im_infer = clean_ims(im_infer)
+    """
+    im_infer = [cim * 255 for cim in im_infer]
 
-    # TODO: modified
     im_infer_tmp = []
-    for im in im_infer:
-        im[im != 255] = 0
-        im_infer_tmp.append(im)
-
+    for cim in im_infer:
+        cim[cim != 255] = 0
+        im_infer_tmp.append(cim)
+    """
+    # print("True", np.all((im_infer[0] == 255) | (im_infer[0] == 0)))
     im_infer = [np.asarray(im, np.uint8) for im in im_infer]
 
     return im_infer
 
+# last operation for image saving
+
+
+def clean_ims(im_infer):
+    def clean_im(im):
+        im = im * 255
+        im[im != 255] = 0
+        return im
+    im_infer = list(map(clean_im, im_infer))
+    return im_infer
+
 
 # infer a whole image
-def infer_imwhole_each(model, im, x_whole, thre_discard, wid_dilate, thre_fill):
-    im_infer_each = combine_im(model, im, x_whole)
-
-    # plt.imshow(im_infer_each)
-    # plt.pause(10)
+def infer_imwhole_each(model, cim, x_whole, thre_discard, wid_dilate, thre_fill):
+    im_infer_each = combine_im(model, cim, x_whole)
 
     im_infer_each = postprocessing(
         im_infer_each, thre_discard, wid_dilate, thre_fill)
@@ -70,17 +80,24 @@ def infer_imwhole_each(model, im, x_whole, thre_discard, wid_dilate, thre_fill):
 
 
 # get image after adapting max of two
-def combine_im(model, im, x_whole):
+def combine_im(model, cim, x_whole):
     shape_ori = x_whole.shape
-    if x_whole.shape[0] % im.hgh != 0:
+    if x_whole.shape[0] % cim.hgh != 0:
         x_whole = np.lib.pad(
-            x_whole, ((0, im.hgh - x_whole.shape[0] % im.hgh), (0, 0)), 'edge')
-    if x_whole.shape[1] % im.wid != 0:
+            x_whole, ((0, cim.hgh - x_whole.shape[0] % cim.hgh), (0, 0)), 'edge')
+    if x_whole.shape[1] % cim.wid != 0:
         x_whole = np.lib.pad(
-            x_whole, ((0, 0), (0, im.wid - x_whole.shape[1] % im.wid)), 'edge')
+            x_whole, ((0, 0), (0, cim.wid - x_whole.shape[1] % cim.wid)), 'edge')
 
-    iml = each_im(model, im, x_whole, 'l')
-    ims = each_im(model, im, x_whole, 's')
+    iml = each_im(model, cim, x_whole, 'l')
+    ims = each_im(model, cim, x_whole, 's')
+
+    plt.imshow(iml)
+    plt.pause(10)
+
+    plt.imshow(ims)
+    plt.pause(10)
+
     im_infer = np.maximum(iml, ims)
     im_infer = im_infer[0:shape_ori[0], 0:shape_ori[1]]
 
@@ -88,7 +105,7 @@ def combine_im(model, im, x_whole):
 
 
 # get image directly output from classifier
-def each_im(model, im, x_whole, imtype):
+def each_im(model, cim, x_whole, imtype):
     if imtype == 'l':
         d = 0
     elif imtype == 's':
@@ -97,33 +114,31 @@ def each_im(model, im, x_whole, imtype):
     x_batch = []
     x_result = []
     k = 0
-    for i in range(int((d / 2) * im.hgh), x_whole.shape[0] - im.hgh + 1, im.hgh):
-        for j in range(int((d / 2) * im.wid), x_whole.shape[1] - im.wid + 1, im.wid):
-            x_batch.append(x_whole[i:i + im.hgh, j:j + im.wid])
-            # plt.imshow(x_whole[i:i + im.hgh, j:j + im.wid])
+    for i in range(int((d / 2) * cim.hgh), x_whole.shape[0] - cim.hgh + 1, cim.hgh):
+        for j in range(int((d / 2) * cim.wid), x_whole.shape[1] - cim.wid + 1, cim.wid):
+            x_batch.append(x_whole[i:i + cim.hgh, j:j + cim.wid])
+            # plt.imshow(x_whole[i:i + cim.hgh, j:j + cim.wid])
             # plt.pause(1)
 
             k = k + 1
             if k % 100 == 0:
                 x_batch = np.asarray(x_batch, np.float32)
-                # x_batch = x_batch.reshape(np.append(-1, im.shapex))
-                x_batch = x_batch.reshape([-1] + im.shapex)
+                x_batch = x_batch.reshape([-1] + cim.shapex)
                 x_result_t = infer_epoch(model, x_batch)
                 x_result.extend(x_result_t)
                 x_batch = []
                 k = 0
     if k != 0:
         x_batch = np.asarray(x_batch, np.float32)
-        # x_batch = x_batch.reshape(np.append(-1, im.shapex))
-        x_batch = x_batch.reshape([-1] + im.shapex)
+        x_batch = x_batch.reshape([-1] + cim.shapex)
         x_result_t = infer_epoch(model, x_batch)
         x_result.extend(x_result_t)
 
     im_result = np.zeros_like(x_whole)
     k = 0
-    for i in range(int((d / 2) * im.hgh), x_whole.shape[0] - im.hgh + 1, im.hgh):
-        for j in range(int((d / 2) * im.wid), x_whole.shape[1] - im.wid + 1, im.wid):
-            im_result[i:i + im.hgh, j:j + im.wid] = x_result[k]
+    for i in range(int((d / 2) * cim.hgh), x_whole.shape[0] - cim.hgh + 1, cim.hgh):
+        for j in range(int((d / 2) * cim.wid), x_whole.shape[1] - cim.wid + 1, cim.wid):
+            im_result[i:i + cim.hgh, j:j + cim.wid] = x_result[k]
             k = k + 1
 
             # plt.imshow(x_result[k])

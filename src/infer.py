@@ -13,7 +13,7 @@ def infer_step(fname_infer="", fname_save="", fname_model="",
 
     print("start inferring.")
 
-    im = ImClass('infer', fname_i=fname_infer)
+    cim = ImClass('infer', fname_i=fname_infer)
 
     if not os.path.isfile(fname_model):
         raise FileNotFoundError(
@@ -27,19 +27,19 @@ def infer_step(fname_infer="", fname_save="", fname_model="",
     model_infer = data_model['model']
     print("info of FCN Classifier: ")
     print("hgh,wid", data_model['shape'])
-    im.change_hgh_wid(data_model['shape'])
+    cim.change_hgh_wid(data_model['shape'])
     print("test acc", "{:.3f}".format(data_model['testacc'][-1]))
 
     try:
         x_whole_inferred = infer_imwhole(
-            model_infer, im, thre_discard, wid_dilate, thre_fill)
+            model_infer, cim, thre_discard, wid_dilate, thre_fill)
     except MemoryError as e:
         raise MemoryError(
             e, "Too many images to be inferred. Decrease number of images.")
     except Exception as e:
         print("Error!!!", e)
         traceback.print_exc()
-    im.save_image(x_whole_inferred, fname_save)
+    cim.save_image(x_whole_inferred, fname_save)
 
     print("done infering.")
 

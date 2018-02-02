@@ -43,15 +43,6 @@ def infer_imwhole(model, cim, thre_discard, wid_dilate, thre_fill):
             print("Done inferring", i + 1, "/", num_im)
 
     im_infer = clean_ims(im_infer)
-    """
-    im_infer = [cim * 255 for cim in im_infer]
-
-    im_infer_tmp = []
-    for cim in im_infer:
-        cim[cim != 255] = 0
-        im_infer_tmp.append(cim)
-    """
-    # print("True", np.all((im_infer[0] == 255) | (im_infer[0] == 0)))
     im_infer = [np.asarray(im, np.uint8) for im in im_infer]
 
     return im_infer
@@ -74,6 +65,9 @@ def infer_imwhole_each(model, cim, x_whole, thre_discard, wid_dilate, thre_fill)
 
     im_infer_each = postprocessing(
         im_infer_each, thre_discard, wid_dilate, thre_fill)
+
+    im_infer_each = np.asarray(im_infer_each, np.uint8)
+
     return im_infer_each
 
 

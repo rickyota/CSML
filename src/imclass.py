@@ -221,6 +221,8 @@ class ImClass:
     # save image
     def save_image(self, ims, fname):
         ims = [Image.fromarray(im) for im in ims]
+
+        # folder
         if not os.path.splitext(fname)[1]:
             if not os.path.isdir(fname):
                 os.mkdir(fname)
@@ -238,6 +240,7 @@ class ImClass:
                 raise Exception(
                     e, "Cannot save images into folder: {}".format(fname))
 
+        # file
         else:
             try:
                 if os.path.isfile(filename):

@@ -8,7 +8,7 @@ import warnings
 # class of Images
 class ImClass:
 
-    def __init__(self, usetype, fname_i="", fname_x="", fname_t="",
+    def __init__(self, usetype,  fname_x="", fname_t="", fname_i="", fname_s="",
                  N_train=25000, N_test=3000, hgh=32, wid=32):
 
         # input size of classifier
@@ -34,11 +34,16 @@ class ImClass:
                 self.type_infer = 'file'
                 self.file_xwhole, self.numframe_xwhole = self.load_file(
                     fname_i)
+                # self.numframe_xwhole=self.load_num(fname_i)
+                self.fname_inferred = fname_s
             elif os.path.isdir(fname_i):
                 self.type_infer = 'folder'
+                if not os.path.isdir(fname_s):
+                    os.mkdir(fname_s)
                 self.fnames_infer = self.get_listdir(fname_i)
-                self.fnames_onlyname_infer = self.get_listdir_onlyname(fname_i)
-
+                #self.fnames_onlyname_infer = self.get_listdir_onlyname(fname_i)
+                self.fnames_inferred = self.get_listdir_inferred(
+                    fname_s, fname_i)
             else:
                 raise FileNotFoundError(
                     "No file or folder found: {}.".format(fname_i))
@@ -115,6 +120,11 @@ class ImClass:
             = self.pickimages(im_x, im_t, N_test, N_train)
         return imdata_pkl
 
+    # load batches
+    def load_batch(self):
+        return self.imdata_pkl['x_train'], self.imdata_pkl['t_train'], \
+            self.imdata_pkl['x_test'], self.imdata_pkl['t_test']
+
     # choose images suitable for small training images
     def pickimages(self, im_x, im_t, N_test, N_train):
         N_each = int((N_train + N_test) / im_x.shape[0])
@@ -168,15 +178,13 @@ class ImClass:
 
     # load num-th whole image
     def load_xwhole(self, num):
+        # if ftype=='folder':
+
+        # elif ftype == 'file':
         im = self.file_xwhole
         im.seek(num)
         im_xwhole = np.asarray(im.convert('L'), np.float32) / 255.0
         return im_xwhole
-
-    # load batches
-    def load_batch(self):
-        return self.imdata_pkl['x_train'], self.imdata_pkl['t_train'], \
-            self.imdata_pkl['x_test'], self.imdata_pkl['t_test']
 
     # load image from non-tiff file
     def load_one_image(self, fname):
@@ -203,6 +211,23 @@ class ImClass:
 
         return fim, num
 
+    """
+    # load number of frame
+    def load_num(self,fname):
+        try:
+            fim = Image.open(fname)
+        except Exception as e:
+            raise IOError(e, "Cannot open file: {}".format(fname))
+        num = 0
+        try:
+            while True:
+                fim.seek(num)
+                num += 1
+        except EOFError:
+            pass
+        return num
+      """
+
     # get number of frame
     def get_numframe(self):
         return self.numframe_xwhole
@@ -212,14 +237,51 @@ class ImClass:
         fnames = list(filter(lambda f: f[0] != ".", fnames))
         fnames = [fname + "/" + filename for filename in fnames]
         return fnames
-
+    """
     def get_listdir_onlyname(self, fname):
         fnames = os.listdir(fname)
         fnames = list(filter(lambda f: f[0] != ".", fnames))
         return fnames
+    """
+
+    def get_listdir_inferred(self, fname_s, fname_i):
+        fnames = os.listdir(fname_i)
+        fnames = list(filter(lambda f: f[0] != ".", fnames))
+        fnames = [fname_s + "/" + filename for filename in fnames]
+        fnames = [os.path.splitext(filename)[0] +
+                  '.png' for filename in fnames]
+        return fnames
 
     # save image
-    def save_image(self, ims, fname):
+    def save_image(self, im, fname, ftype):
+        # folder
+        if ftype == 'folder':
+            im = Image.fromarray(im)
+            try:
+                if os.path.isfile(fname):
+                    warnings.warn(
+                        "Files is being overwritten: {}.".format(fname))
+                im.save(fname)
+            except Exception as e:
+                raise Exception(
+                    e, "Cannot save image to file: {}".format(fname))
+
+        # file
+        elif ftype == 'file':
+            im = [Image.fromarray(img) for img in im]
+            try:
+                if os.path.isfile(fname):
+                    warnings.warn(
+                        "Files is being overwritten: {}.".format(fname))
+                if len(im) == 1:
+                    im[0].save(fname, save_all=True)
+                else:
+                    im[0].save(fname, save_all=True, append_images=im[1:])
+            except Exception as e:
+                raise Exception(
+                    e, "Cannot save images into file: {}".format(fname))
+
+        """
         ims = [Image.fromarray(im) for im in ims]
 
         # folder
@@ -253,3 +315,4 @@ class ImClass:
             except Exception as e:
                 raise Exception(
                     e, "Cannot save images into file: {}".format(fname))
+        """

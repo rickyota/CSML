@@ -38,10 +38,16 @@ def Cell_Segmentation():
         wid_dilate = int(config['inference parameters']['width dilate'])
         thre_fill = int(config['inference parameters']['threshold fill'])
 
-        train_step(fname_train=fname_train, fname_label=fname_label, fname_model=fname_model,
-                   N_test=N_test, N_train=N_train, N_epoch=N_epoch, batchsize=batchsize, hgh=hgh, wid=wid)
-        infer_step(fname_infer=fname_infer, fname_save=fname_save, fname_model=fname_model,
-                   thre_discard=thre_discard, wid_dilate=wid_dilate, thre_fill=thre_fill)
+        try:
+            train_step(fname_train=fname_train, fname_label=fname_label, fname_model=fname_model,
+                       N_test=N_test, N_train=N_train, N_epoch=N_epoch, batchsize=batchsize, hgh=hgh, wid=wid)
+        except Exception as e:
+            raise Exception(e, "Got an error in training step.")
+        try:
+            infer_step(fname_infer=fname_infer, fname_save=fname_save, fname_model=fname_model,
+                       thre_discard=thre_discard, wid_dilate=wid_dilate, thre_fill=thre_fill)
+        except Exception as e:
+            raise Exception(e, "Got an error in inference step.")
         print("all done.")
 
     elif sys.argv[1].startswith('infer') and sys.argv[1].endswith('.ini'):
@@ -54,8 +60,11 @@ def Cell_Segmentation():
         wid_dilate = int(config['inference parameters']['width dilate'])
         thre_fill = int(config['inference parameters']['threshold fill'])
 
-        infer_step(fname_infer=fname_infer, fname_save=fname_save, fname_model=fname_model,
-                   thre_discard=thre_discard, wid_dilate=wid_dilate, thre_fill=thre_fill)
+        try:
+            infer_step(fname_infer=fname_infer, fname_save=fname_save, fname_model=fname_model,
+                       thre_discard=thre_discard, wid_dilate=wid_dilate, thre_fill=thre_fill)
+        except Exception as e:
+            raise Exception(e, "Got an error in inference step.")
         print("all done.")
 
 

@@ -3,26 +3,16 @@ from cv2 import connectedComponents, connectedComponentsWithStats, watershed, di
 from epoch import infer_epoch
 
 
-# infer whole images
-def infer_imwhole(model, cim, thre_discard, wid_dilate, thre_fill):
+# infer a whole image
+def infer_imwhole_each(model, cim, x_whole, thre_discard, wid_dilate, thre_fill):
+    im_infer_each = combine_im(model, cim, x_whole)
 
-    num_im = cim.get_numframe() if cim.type_infer == 'file' else len(cim.fnames_infer)
-    im_infer = []
-    for i in range(num_im):
-        if cim.type_infer == 'file':
-            x_whole_each = cim.load_xwhole(i)
-        else:
-            x_whole_each = cim.load_one_image(cim.fnames_infer[i])
-        im_infer_each = infer_imwhole_each(
-            model, cim, x_whole_each, thre_discard, wid_dilate, thre_fill)
-        im_infer.append(im_infer_each)
-        if i % 5 == 4:
-            print("Done inferring", i + 1, "/", num_im)
+    im_infer_each = postprocessing(
+        im_infer_each, thre_discard, wid_dilate, thre_fill)
+    im_infer_each = clean_ims(im_infer_each)
+    im_infer_each = np.asarray(im_infer_each, np.uint8)
 
-    im_infer = clean_ims(im_infer)
-    im_infer = [np.asarray(im, np.uint8) for im in im_infer]
-
-    return im_infer
+    return im_infer_each
 
 # last operation for image saving
 
@@ -35,20 +25,9 @@ def clean_ims(im_infer):
     im_infer = list(map(clean_im, im_infer))
     return im_infer
 
-
-# infer a whole image
-def infer_imwhole_each(model, cim, x_whole, thre_discard, wid_dilate, thre_fill):
-    im_infer_each = combine_im(model, cim, x_whole)
-
-    im_infer_each = postprocessing(
-        im_infer_each, thre_discard, wid_dilate, thre_fill)
-
-    im_infer_each = np.asarray(im_infer_each, np.uint8)
-
-    return im_infer_each
-
-
 # get image after adapting max of two
+
+
 def combine_im(model, cim, x_whole):
     shape_ori = x_whole.shape
     if x_whole.shape[0] % cim.hgh != 0:

@@ -23,10 +23,10 @@ def infer_step(fname_infer="", fname_save="", fname_model="",
         raise Exception(e, "Cannot open model file: {}".fotmat(fname_model))
 
     model_infer = data_model['model']
-    print("info of FCN Classifier: ")
-    print("hgh,wid", data_model['shape'])
     cim.change_hgh_wid(data_model['shape'])
-    print("test acc", "{:.3f}".format(data_model['testacc'][-1]))
+    print("Info of FCN Classifier: \n",
+          "\t", "hgh,wid", data_model['shape'], "\n",
+          "\t", "test acc", "{:.3f}".format(data_model['testacc'][-1]))
 
     if cim.type_infer == 'folder':
         num_im = len(cim.fnames_infer)
@@ -40,44 +40,20 @@ def infer_step(fname_infer="", fname_save="", fname_model="",
                 print("Done inferring", i + 1, "/", num_im)
 
     elif cim.type_infer == 'file':
-        #num_im = cim.get_num_infer()
         num_im = cim.num_infer
         ims_inferred = []
-        for i in range(num_im):
-            im_infer = cim.read_im_file(i)
-            im_inferred = infer_im(
-                model_infer, cim, im_infer, thre_discard, wid_dilate, thre_fill)
-            ims_inferred.append(im_inferred)
-            if i % 5 == 4:
-                print("Done inferring", i + 1, "/", num_im)
-        cim.save_image(ims_inferred, fname_save)
-
-    """
-    # infer whole images
-    def infer_imwhole(model, cim, thre_discard, wid_dilate, thre_fill):
-    
-        num_im = cim.get_numframe() if cim.type_infer == 'file' else len(cim.fnames_infer)
-        ims_inferred = []
-        for i in range(num_im):
-            if cim.type_infer == 'file':
+        try:
+            for i in range(num_im):
                 im_infer = cim.read_im_file(i)
-            else:
-                im_infer = cim.read_im_folder(cim.fnames_infer[i])
-            im_inferred = infer_im(
-                model, cim, im_infer, thre_discard, wid_dilate, thre_fill)
-            ims_inferred.append(im_inferred)
-            if i % 5 == 4:
-                print("Done inferring", i + 1, "/", num_im)
-    
-    """
-
-    """
-    except MemoryError as e:
-        raise MemoryError(
-            e, "Too many images to be inferred. Decrease number of images.")
-    """
-
-    #cim.save_image(x_whole_inferred, fname_save)
+                im_inferred = infer_im(
+                    model_infer, cim, im_infer, thre_discard, wid_dilate, thre_fill)
+                ims_inferred.append(im_inferred)
+                if i % 5 == 4:
+                    print("Done inferring", i + 1, "/", num_im)
+            cim.save_image(ims_inferred, fname_save)
+        except MemoryError as e:
+            raise MemoryError(
+                e, "Too many images to be inferred. Decrease number of images.")
 
     print("done infering.")
 

@@ -224,7 +224,7 @@ class ImClass:
     # git filename in dir
     def _get_listdir(self, fname):
         fnames = os.listdir(fname)
-        fnames = list(filter(lambda f: f[0] != ".", fnames))
+        fnames = list(filter(lambda f: not f.startswith("."), fnames))
         fnames = [fname + "/" + filename for filename in fnames]
         return fnames
 

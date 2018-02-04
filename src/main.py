@@ -8,7 +8,6 @@ import os
 
 # start segmentation based on .ini
 def Cell_Segmentation():
-
     if len(sys.argv) != 2:
         raise SyntaxError(
             "Expect: 2 args Actual: {0} args.".format(len(sys.argv)))

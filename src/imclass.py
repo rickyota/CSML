@@ -4,11 +4,20 @@ from PIL import Image
 import os
 import warnings
 
+"""
+# name changed
+# args
+# num_xwhole -> num_infer
+# get_numframe() -> get_num_infer()
+# imdata_pkl[] -> 'train_training' 'label_testing'
+"""
 
 # class of Images
+
+
 class ImClass:
 
-    def __init__(self, usetype,  fname_x="", fname_t="", fname_i="", fname_s="",
+    def __init__(self, usetype,  fname_train="", fname_label="", fname_infer="", fname_inferred="",
                  N_train=25000, N_test=3000, hgh=32, wid=32):
 
         # input size of classifier
@@ -16,37 +25,42 @@ class ImClass:
         self.wid = wid
         self.shapex = [1, self.hgh, self.wid]
         self.shapet = [self.hgh, self.wid]
-        self.fnames = []
 
         if usetype == 'train':
-            im_x, im_t = self.load_imx(fname_x), self.load_imt(fname_t)
-            if im_x.shape[0] != im_t.shape[0]:
+            ims_train = self._load_ims_train(fname_train)
+            ims_label = self._load_ims_label(fname_label)
+
+            if ims_train.shape[0] != ims_label.shape[0]:
                 raise ValueError(
                     "Number of images in two folders or files are different: \
-                     {0} and {1}".format(fname_x, fname_t))
-            if im_x.shape[1] != im_t.shape[1] or im_x.shape[2] != im_t.shape[2]:
+                     {0} and {1}".format(fname_train, fname_label))
+            if ims_train.shape[1] != ims_label.shape[1] or ims_train.shape[2] != ims_label.shape[2]:
                 raise ValueError(
                     "Size of training images and label images are not same.")
-            self.imdata_pkl = self.make_pkl(im_x, im_t, N_test, N_train)
+
+            self.imdata_pkl = self._make_pkl(
+                ims_train, ims_label, N_test, N_train)
 
         elif usetype == 'infer':
-            if os.path.isfile(fname_i):
+            if os.path.isfile(fname_infer):
                 self.type_infer = 'file'
-                self.file_xwhole, self.numframe_xwhole = self.load_file(
-                    fname_i)
-                # self.numframe_xwhole=self.load_num(fname_i)
-                self.fname_inferred = fname_s
-            elif os.path.isdir(fname_i):
+                self.file_infer, self.num_infer = \
+                    self._load_file(fname_infer)
+                self.fname_inferred = fname_inferred
+
+            elif os.path.isdir(fname_infer):
                 self.type_infer = 'folder'
-                if not os.path.isdir(fname_s):
-                    os.mkdir(fname_s)
-                self.fnames_infer = self.get_listdir(fname_i)
-                #self.fnames_onlyname_infer = self.get_listdir_onlyname(fname_i)
-                self.fnames_inferred = self.get_listdir_inferred(
-                    fname_s, fname_i)
+
+                if not os.path.isdir(fname_inferred):
+                    os.mkdir(fname_inferred)
+
+                self.fnames_infer = self._get_listdir(fname_infer)
+                self.fnames_inferred = self._get_listdir_inferred(
+                    fname_inferred, fname_infer)
+
             else:
                 raise FileNotFoundError(
-                    "No file or folder found: {}.".format(fname_i))
+                    "No file or folder found: {}.".format(fname_infer))
 
     def change_hgh_wid(self, shape):
         self.hgh, self.wid = shape[0], shape[1]
@@ -54,23 +68,24 @@ class ImClass:
         self.shapet = [self.hgh, self.wid]
 
     # load images
-    def load_imx(self, fname):
+    def _load_ims_train(self, fname):
         if os.path.isfile(fname):
-            im, num = self.load_file(fname)
+            fim, num = self._load_file(fname)
             ims = []
             for i in range(num):
-                im.seek(i)
-                im_tmp = np.asarray(im.convert('L')) / 255.0
+                fim.seek(i)
+                im_tmp = np.asarray(fim.convert('L')) / 255.0
                 ims.append(im_tmp)
+
         elif os.path.isdir(fname):
-            self.fnames = self.get_listdir(fname)
-            if not self.fnames:
+            fnames = self._get_listdir(fname)
+            if not fnames:
                 raise FileNotFoundError(
                     "No files in the folder: {}.".format(fname))
 
             ims = []
-            for filename in self.fnames:
-                im_tmp = self.load_one_image(filename)
+            for filename in fnames:
+                im_tmp = self.read_im_folder(filename)
                 ims.append(im_tmp)
         else:
             raise FileNotFoundError(
@@ -85,23 +100,25 @@ class ImClass:
         return ims
 
     # load contoured images
-    def load_imt(self, fname):
+    def _load_ims_label(self, fname):
         if os.path.isfile(fname):
-            im, num = self.load_file(fname)
+            fim, num = self._load_file(fname)
             ims = []
             for i in range(num):
-                im.seek(i)
-                im_tmp = np.asarray(im.convert('L')) / 255
+                fim.seek(i)
+                im_tmp = np.asarray(fim.convert('L')) / 255
                 ims.append(im_tmp)
+
         elif os.path.isdir(fname):
-            self.fnames = self.get_listdir(fname)
-            if not self.fnames:
+            fnames = self._get_listdir(fname)
+            if not fnames:
                 raise FileNotFoundError(
                     "No files in the folder: {}.".format(fname))
             ims = []
-            for filename in self.fnames:
-                im_tmp = self.load_one_image(filename)
+            for filename in fnames:
+                im_tmp = self.read_im_folder(filename)
                 ims.append(im_tmp)
+
         else:
             raise FileNotFoundError(
                 "No file or folder found: {}.".format(fname))
@@ -114,58 +131,63 @@ class ImClass:
         return ims
 
     # make file that all images packed in
-    def make_pkl(self, im_x, im_t, N_test, N_train):
+    def _make_pkl(self, im_train, im_label, N_test, N_train):
         imdata_pkl = {}
-        imdata_pkl['x_train'], imdata_pkl['t_train'], imdata_pkl['x_test'], imdata_pkl['t_test'] \
-            = self.pickimages(im_x, im_t, N_test, N_train)
+        imdata_pkl['train_training'], imdata_pkl['label_training'], \
+            imdata_pkl['train_testing'], imdata_pkl['label_testing'] \
+            = self._pickimages(im_train, im_label, N_test, N_train)
         return imdata_pkl
 
     # load batches
     def load_batch(self):
-        return self.imdata_pkl['x_train'], self.imdata_pkl['t_train'], \
-            self.imdata_pkl['x_test'], self.imdata_pkl['t_test']
+        return self.imdata_pkl['train_training'], self.imdata_pkl['label_training'], \
+            self.imdata_pkl['train_testing'], self.imdata_pkl['label_testing']
 
     # choose images suitable for small training images
-    def pickimages(self, im_x, im_t, N_test, N_train):
-        N_each = int((N_train + N_test) / im_x.shape[0])
-        x_tmp, t_tmp = [], []
+    def _pickimages(self, ims_train, ims_label, N_test, N_train):
+        N_each = int((N_train + N_test) / ims_train.shape[0])
+        ims_train_tmp, ims_label_tmp = [], []
 
-        for i, (im_x_each, im_t_each) in enumerate(zip(im_x, im_t)):
-            bound = self._getBound(im_t_each)
+        for i, (im_train, im_label) in enumerate(zip(ims_train, ims_label)):
+            bound = self._getBound(im_label)
             xs, ys = np.where(bound == True)
+
             if len(xs) < N_each:
                 raise ValueError(
                     "Training image set cannot be made. Decrease 'number train' or \
                     spread contoured region in label images.")
+
             perm = np.random.permutation(xs.shape[0])
             xs, ys = xs[perm[0:2 * N_each]], ys[perm[0:2 * N_each]]
 
             count = 0
             for i in range(2 * N_each):
                 x, y = xs[i], ys[i]
-                im_t_tmp = im_t_each[x:x + self.hgh, y:y + self.wid]
+                #im_t_tmp = im_label[x:x + self.hgh, y:y + self.wid]
                 if self._isInBound(bound, x, y):
-                    im_x_tmp = im_x_each[x:x + self.hgh, y:y + self.wid]
-                    x_tmp.append(im_x_tmp), t_tmp.append(im_t_tmp)
+                    im_train_cut = im_train[x:x + self.hgh, y:y + self.wid]
+                    im_label_cut = im_label[x:x + self.hgh, y:y + self.wid]
+                    ims_train_tmp.append(im_train_cut)
+                    ims_label_tmp.append(im_label_cut)
                     count += 1
                     if count >= N_each:
                         break
 
-        x_tmp = np.asarray(x_tmp, np.float32)
-        t_tmp = np.asarray(t_tmp, np.int32)
-        x_tmp = x_tmp.reshape([-1] + self.shapex)
-        t_tmp = t_tmp.reshape([-1] + self.shapet)
+        ims_train_tmp = np.asarray(ims_train_tmp, np.float32)
+        ims_label_tmp = np.asarray(ims_label_tmp, np.int32)
+        ims_train_tmp = ims_train_tmp.reshape([-1] + self.shapex)
+        ims_label_tmp = ims_label_tmp.reshape([-1] + self.shapet)
 
-        x_train = x_tmp[0:N_train]
-        t_train = t_tmp[0:N_train]
-        x_test = x_tmp[N_train:N_train + N_test]
-        t_test = t_tmp[N_train:N_train + N_test]
+        ims_train_training = ims_train_tmp[0:N_train]
+        ims_label_training = ims_label_tmp[0:N_train]
+        ims_train_testing = ims_train_tmp[N_train:N_train + N_test]
+        ims_label_testing = ims_label_tmp[N_train:N_train + N_test]
 
-        return x_train, t_train, x_test, t_test
+        return ims_train_training, ims_label_training, ims_train_testing, ims_label_testing
 
     # get criteria of whether suitable or not
-    def _getBound(self, im_t_each):
-        _, bound = connectedComponents(np.uint8(1 - im_t_each))
+    def _getBound(self, im_label):
+        _, bound = connectedComponents(np.uint8(1 - im_label))
         bound[bound != 1] = 0
         bound = 1 - bound
         bound = np.asarray(bound, bool)
@@ -177,17 +199,14 @@ class ImClass:
             and bound[x + self.hgh, y + self.wid]
 
     # load num-th whole image
-    def load_xwhole(self, num):
-        # if ftype=='folder':
-
-        # elif ftype == 'file':
-        im = self.file_xwhole
+    def read_im_file(self, num):
+        im = self.file_infer
         im.seek(num)
         im_xwhole = np.asarray(im.convert('L'), np.float32) / 255.0
         return im_xwhole
 
     # load image from non-tiff file
-    def load_one_image(self, fname):
+    def read_im_folder(self, fname):
         try:
             fim = Image.open(fname)
         except Exception as e:
@@ -196,7 +215,7 @@ class ImClass:
         return im
 
     # load file and number of frame
-    def load_file(self, fname):
+    def _load_file(self, fname):
         try:
             fim = Image.open(fname)
         except Exception as e:
@@ -211,68 +230,41 @@ class ImClass:
 
         return fim, num
 
-    """
-    # load number of frame
-    def load_num(self,fname):
-        try:
-            fim = Image.open(fname)
-        except Exception as e:
-            raise IOError(e, "Cannot open file: {}".format(fname))
-        num = 0
-        try:
-            while True:
-                fim.seek(num)
-                num += 1
-        except EOFError:
-            pass
-        return num
-      """
-
-    # get number of frame
-    def get_numframe(self):
-        return self.numframe_xwhole
-
-    def get_listdir(self, fname):
+    def _get_listdir(self, fname):
         fnames = os.listdir(fname)
         fnames = list(filter(lambda f: f[0] != ".", fnames))
         fnames = [fname + "/" + filename for filename in fnames]
         return fnames
-    """
-    def get_listdir_onlyname(self, fname):
-        fnames = os.listdir(fname)
-        fnames = list(filter(lambda f: f[0] != ".", fnames))
-        return fnames
-    """
 
-    def get_listdir_inferred(self, fname_s, fname_i):
-        fnames = os.listdir(fname_i)
-        fnames = list(filter(lambda f: f[0] != ".", fnames))
-        fnames = [fname_s + "/" + filename for filename in fnames]
+    def _get_listdir_inferred(self, fname_inferred, fname_infer):
+        fnames = os.listdir(fname_infer)
+        fnames = list(filter(lambda f: not f.startswith("."), fnames))
+        fnames = [fname_inferred + "/" + filename for filename in fnames]
         fnames = [os.path.splitext(filename)[0] +
                   '.png' for filename in fnames]
         return fnames
 
     # save image
-    def save_image(self, im, fname, ftype):
+    def save_image(self, im, fname):
         # folder
-        if ftype == 'folder':
+        if self.type_infer == 'folder':
             im = Image.fromarray(im)
             try:
                 if os.path.isfile(fname):
                     warnings.warn(
-                        "Files is being overwritten: {}.".format(fname))
+                        "File is being overwritten: {}.".format(fname))
                 im.save(fname)
             except Exception as e:
                 raise Exception(
                     e, "Cannot save image to file: {}".format(fname))
 
         # file
-        elif ftype == 'file':
+        elif self.type_infer == 'file':
             im = [Image.fromarray(img) for img in im]
             try:
                 if os.path.isfile(fname):
                     warnings.warn(
-                        "Files is being overwritten: {}.".format(fname))
+                        "File is being overwritten: {}.".format(fname))
                 if len(im) == 1:
                     im[0].save(fname, save_all=True)
                 else:
@@ -280,39 +272,3 @@ class ImClass:
             except Exception as e:
                 raise Exception(
                     e, "Cannot save images into file: {}".format(fname))
-
-        """
-        ims = [Image.fromarray(im) for im in ims]
-
-        # folder
-        if not os.path.splitext(fname)[1]:
-            if not os.path.isdir(fname):
-                os.mkdir(fname)
-
-            fnames = self.fnames_onlyname_infer
-            fnames = [fname + "/" + filename for filename in fnames]
-            try:
-                for im, filename in zip(ims, fnames):
-                    filename = os.path.splitext(filename)[0] + '.png'
-                    if os.path.isfile(filename):
-                        warnings.warn(
-                            "Files is being overwritten: {}.".format(filename))
-                    im.save(filename)
-            except Exception as e:
-                raise Exception(
-                    e, "Cannot save images into folder: {}".format(fname))
-
-        # file
-        else:
-            try:
-                if os.path.isfile(filename):
-                    warnings.warn(
-                        "Files is being overwritten: {}.".format(filename))
-                if len(ims) == 1:
-                    ims[0].save(fname, save_all=True)
-                else:
-                    ims[0].save(fname, save_all=True, append_images=ims[1:])
-            except Exception as e:
-                raise Exception(
-                    e, "Cannot save images into file: {}".format(fname))
-        """

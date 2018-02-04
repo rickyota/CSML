@@ -4,50 +4,44 @@ from epoch import infer_epoch
 
 
 # infer a whole image
-def infer_imwhole_each(model, cim, x_whole, thre_discard, wid_dilate, thre_fill):
-    im_infer_each = combine_im(model, cim, x_whole)
+def infer_im(model, cim, im, thre_discard, wid_dilate, thre_fill):
+    im = combine_im(model, cim, im)
 
-    im_infer_each = postprocessing(
-        im_infer_each, thre_discard, wid_dilate, thre_fill)
-    im_infer_each = clean_ims(im_infer_each)
-    im_infer_each = np.asarray(im_infer_each, np.uint8)
+    im = postprocessing(im, thre_discard, wid_dilate, thre_fill)
+    im = clean_im(im)
+    im = np.asarray(im, np.uint8)
 
-    return im_infer_each
-
-# last operation for image saving
+    return im
 
 
-def clean_ims(im_infer):
-    def clean_im(im):
-        im = im * 255
-        im[im != 255] = 0
-        return im
-    im_infer = list(map(clean_im, im_infer))
-    return im_infer
+# make sure im is only 0 and 255
+def clean_im(im):
+    im = im * 255
+    im[im != 255] = 0
+    return im
+
 
 # get image after adapting max of two
+def combine_im(model, cim, im):
+    shape_ori = im.shape
+    if im.shape[0] % cim.hgh != 0:
+        im = np.lib.pad(
+            im, ((0, cim.hgh - im.shape[0] % cim.hgh), (0, 0)), 'edge')
+    if im.shape[1] % cim.wid != 0:
+        im = np.lib.pad(
+            im, ((0, 0), (0, cim.wid - im.shape[1] % cim.wid)), 'edge')
 
+    iml = each_im(model, cim, im, 'l')
+    ims = each_im(model, cim, im, 's')
 
-def combine_im(model, cim, x_whole):
-    shape_ori = x_whole.shape
-    if x_whole.shape[0] % cim.hgh != 0:
-        x_whole = np.lib.pad(
-            x_whole, ((0, cim.hgh - x_whole.shape[0] % cim.hgh), (0, 0)), 'edge')
-    if x_whole.shape[1] % cim.wid != 0:
-        x_whole = np.lib.pad(
-            x_whole, ((0, 0), (0, cim.wid - x_whole.shape[1] % cim.wid)), 'edge')
+    im = np.maximum(iml, ims)
+    im = im[0:shape_ori[0], 0:shape_ori[1]]
 
-    iml = each_im(model, cim, x_whole, 'l')
-    ims = each_im(model, cim, x_whole, 's')
-
-    im_infer = np.maximum(iml, ims)
-    im_infer = im_infer[0:shape_ori[0], 0:shape_ori[1]]
-
-    return im_infer
+    return im
 
 
 # get image directly output from classifier
-def each_im(model, cim, x_whole, imtype):
+def each_im(model, cim, im, imtype):
     if imtype == 'l':
         d = 0
     elif imtype == 's':
@@ -56,9 +50,9 @@ def each_im(model, cim, x_whole, imtype):
     x_batch = []
     x_result = []
     k = 0
-    for i in range(int((d / 2) * cim.hgh), x_whole.shape[0] - cim.hgh + 1, cim.hgh):
-        for j in range(int((d / 2) * cim.wid), x_whole.shape[1] - cim.wid + 1, cim.wid):
-            x_batch.append(x_whole[i:i + cim.hgh, j:j + cim.wid])
+    for i in range(int((d / 2) * cim.hgh), im.shape[0] - cim.hgh + 1, cim.hgh):
+        for j in range(int((d / 2) * cim.wid), im.shape[1] - cim.wid + 1, cim.wid):
+            x_batch.append(im[i:i + cim.hgh, j:j + cim.wid])
 
             k += 1
             if k % 100 == 0:
@@ -74,14 +68,14 @@ def each_im(model, cim, x_whole, imtype):
         x_result_t = infer_epoch(model, x_batch)
         x_result.extend(x_result_t)
 
-    im_result = np.zeros_like(x_whole)
+    im_inferred = np.zeros_like(im)
     k = 0
-    for i in range(int((d / 2) * cim.hgh), x_whole.shape[0] - cim.hgh + 1, cim.hgh):
-        for j in range(int((d / 2) * cim.wid), x_whole.shape[1] - cim.wid + 1, cim.wid):
-            im_result[i:i + cim.hgh, j:j + cim.wid] = x_result[k]
+    for i in range(int((d / 2) * cim.hgh), im.shape[0] - cim.hgh + 1, cim.hgh):
+        for j in range(int((d / 2) * cim.wid), im.shape[1] - cim.wid + 1, cim.wid):
+            im_inferred[i:i + cim.hgh, j:j + cim.wid] = x_result[k]
             k += 1
 
-    return im_result
+    return im_inferred
 
 
 # get last image

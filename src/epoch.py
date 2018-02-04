@@ -12,7 +12,6 @@ def training_epoch(model, optimizer, x_train, t_train, batchsize=100):
     for i in range(0, N_train, batchsize):
         x_batch = Variable(x_train[perm[i:i + batchsize]])
         t_batch = Variable(t_train[perm[i:i + batchsize]])
-        #x_batch, t_batch = Variable(x_batch), Variable(t_batch)
 
         model.zerograds()
         loss, acc = model(x_batch, t_batch)
@@ -40,7 +39,6 @@ def testing_epoch(model, x_test, t_test, batchsize=100):
     for i in range(0, N_test, batchsize):
         x_batch = Variable(x_test[i:i + batchsize])
         t_batch = Variable(t_test[i:i + batchsize])
-        #x_batch, t_batch = Variable(x_batch), Variable(t_batch)
 
         _, acc = model(x_batch, t_batch)
         sum_acc += float(acc.data) * batchsize

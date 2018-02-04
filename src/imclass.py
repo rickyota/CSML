@@ -4,16 +4,6 @@ from PIL import Image
 import os
 import warnings
 
-"""
-# name changed
-# args
-# num_xwhole -> num_infer
-# get_numframe() -> get_num_infer()
-# imdata_pkl[] -> 'train_training' 'label_testing'
-"""
-
-# class of Images
-
 
 class ImClass:
 
@@ -62,6 +52,7 @@ class ImClass:
                 raise FileNotFoundError(
                     "No file or folder found: {}.".format(fname_infer))
 
+    # use hgh and wid in model.pkl
     def change_hgh_wid(self, shape):
         self.hgh, self.wid = shape[0], shape[1]
         self.shapex = [1, self.hgh, self.wid]
@@ -230,18 +221,20 @@ class ImClass:
 
         return fim, num
 
+    # git filename in dir
     def _get_listdir(self, fname):
         fnames = os.listdir(fname)
         fnames = list(filter(lambda f: f[0] != ".", fnames))
         fnames = [fname + "/" + filename for filename in fnames]
         return fnames
 
+    # make inferred filename
     def _get_listdir_inferred(self, fname_inferred, fname_infer):
         fnames = os.listdir(fname_infer)
         fnames = list(filter(lambda f: not f.startswith("."), fnames))
         fnames = [fname_inferred + "/" + filename for filename in fnames]
-        fnames = [os.path.splitext(filename)[0] +
-                  '.png' for filename in fnames]
+        fnames = [os.path.splitext(filename)[0] + '.png'
+                  for filename in fnames]
         return fnames
 
     # save image

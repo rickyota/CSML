@@ -34,7 +34,7 @@ def infer_step(fname_infer="", fname_save="", fname_model="",
             im_infer = cim.read_im_folder(cim.fnames_infer[i])
             im_inferred = infer_im(
                 model_infer, cim, im_infer, thre_discard, wid_dilate, thre_fill)
-            cim.save_image(im_inferred, cim.fnames_inferred[i])
+            cim.save_im(im_inferred, cim.fnames_inferred[i])
 
             if i % 5 == 4:
                 print("Done inferring", i + 1, "/", num_im)
@@ -50,7 +50,7 @@ def infer_step(fname_infer="", fname_save="", fname_model="",
                 ims_inferred.append(im_inferred)
                 if i % 5 == 4:
                     print("Done inferring", i + 1, "/", num_im)
-            cim.save_image(ims_inferred, fname_save)
+            cim.save_im(ims_inferred, fname_save)
         except MemoryError as e:
             raise MemoryError(
                 e, "Too many images to be inferred. Decrease number of images.")

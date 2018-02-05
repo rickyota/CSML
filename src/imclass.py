@@ -154,7 +154,6 @@ class ImClass:
             count = 0
             for i in range(2 * N_each):
                 x, y = xs[i], ys[i]
-                #im_t_tmp = im_label[x:x + self.hgh, y:y + self.wid]
                 if self._isInBound(bound, x, y):
                     im_train_cut = im_train[x:x + self.hgh, y:y + self.wid]
                     im_label_cut = im_label[x:x + self.hgh, y:y + self.wid]
@@ -186,7 +185,8 @@ class ImClass:
 
     # judge based on criteria
     def _isInBound(self, bound, x, y):
-        return bound[x + self.hgh, y] and bound[x, y + self.wid] \
+        return x + self.hgh < bound.shape[0] and y + self.wid < bound.shape[1] \
+            and bound[x + self.hgh, y] and bound[x, y + self.wid] \
             and bound[x + self.hgh, y + self.wid]
 
     # load num-th whole image
@@ -202,6 +202,7 @@ class ImClass:
             fim = Image.open(fname)
         except Exception as e:
             raise IOError(e, "Cannot open file: {}".format(fname))
+
         im = np.asarray(fim.convert('L')) / 255.0
         return im
 
@@ -238,7 +239,7 @@ class ImClass:
         return fnames
 
     # save image
-    def save_image(self, im, fname):
+    def save_im(self, im, fname):
         # folder
         if self.type_infer == 'folder':
             im = Image.fromarray(im)

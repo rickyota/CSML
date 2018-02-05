@@ -1,5 +1,5 @@
 import numpy as np
-from cv2 import connectedComponents, connectedComponentsWithStats, watershed, dilate, distanceTransform, DIST_L2
+from cv2 import connectedComponents, connectedComponentsWithStats, watershed, dilate, distanceTransform, DIST_L2, CC_STAT_AREA
 from epoch import infer_epoch
 
 
@@ -94,19 +94,18 @@ def postprocessing(im, thre_discard, wid_dilate, thre_fill):
 # discard isolated area under threshold
 def discard(im, threshold):
     im = np.uint8(im)
-    n, im_label, stat, _ = connectedComponentsWithStats(im, connectivity=4)
-    im_discard = np.zeros_like(im)
-    k = 0
+    n, im_label, stats, _ = connectedComponentsWithStats(im, connectivity=4)
+    # OK? added np.int8
+    im_discard = np.zeros_like(im, np.uint8)
     for i in range(1, n):
-        if stat[i][4] > threshold:
-            k += 1
+        if stats[i, CC_STAT_AREA] > threshold:
             im_discard[im_label == i] = 1
     return im_discard
 
 
 # dilate width px
 def dilate_im(im, width):
-    neibor8 = np.ones((width + 2, width + 2), np.int8)
+    neibor8 = np.ones((width + 2, width + 2), np.uint8)
     im = dilate(im, neibor8, iterations=1)
     return im
 
@@ -114,9 +113,9 @@ def dilate_im(im, width):
 # fill area under threshld
 def fill(im, threshold):
     im = 1 - im
-    n, im_label, stat, _ = connectedComponentsWithStats(im, connectivity=4)
+    n, im_label, stats, _ = connectedComponentsWithStats(im, connectivity=4)
     for i in range(1, n):
-        if stat[i][4] <= threshold:
+        if stats[i, CC_STAT_AREA] <= threshold:
             im[im_label == i] = 0
     return im
 

@@ -34,8 +34,8 @@ class ImClass:
         elif usetype == 'infer':
             if os.path.isfile(fname_infer):
                 self.type_infer = 'file'
-                self.file_infer, self.num_infer = \
-                    self._load_file(fname_infer)
+                self.file_infer, self.num_infer \
+                    = self._load_file(fname_infer)
                 self.fname_inferred = fname_inferred
 
             elif os.path.isdir(fname_infer):
@@ -212,7 +212,9 @@ class ImClass:
             fim = Image.open(fname)
         except Exception as e:
             raise IOError(e, "Cannot open file: {}".format(fname))
+
         num = 0
+
         try:
             while True:
                 fim.seek(num)

@@ -3,7 +3,6 @@ from imclass import ImClass
 from epoch import training_epoch, testing_epoch
 from FCN_Classifier import FCN
 
-
 import pickle
 
 
@@ -16,7 +15,8 @@ def train_step(fname_train="", fname_label="", fname_model="",
     cim = ImClass('train', fname_train=fname_train, fname_label=fname_label,
                   N_train=N_train, N_test=N_test, hgh=hgh, wid=wid)
     train_training, label_training, train_testing, label_testing = cim.load_batch()
-    print("shapes:", train_training.shape, label_training.shape, train_testing.shape, label_testing.shape)
+    print("shapes:", train_training.shape, label_training.shape,
+          train_testing.shape, label_testing.shape)
 
     model = FCN()
     optimizer = Adam()
@@ -33,7 +33,8 @@ def train_step(fname_train="", fname_label="", fname_model="",
         train_loss.append(train_loss_tmp), train_acc.append(train_acc_tmp)
 
         # evaluation
-        test_acc_tmp = testing_epoch(model, train_testing, label_testing, batchsize)
+        test_acc_tmp = testing_epoch(
+            model, train_testing, label_testing, batchsize)
         test_acc.append(test_acc_tmp)
 
         print("train_loss", "train_acc", "test_acc", "\n",

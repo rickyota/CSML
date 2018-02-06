@@ -5,7 +5,7 @@ from epoch import infer_epoch
 
 # infer a whole image
 def infer_im(model, cim, im, thre_discard, wid_dilate, thre_fill):
-    im = combine_im(model, cim, im)
+    im = infer_im_raw(model, cim, im)
 
     im = postprocessing(im, thre_discard, wid_dilate, thre_fill)
     im = clean_im(im)
@@ -22,7 +22,7 @@ def clean_im(im):
 
 
 # get image after adapting max of two
-def combine_im(model, cim, im):
+def infer_im_raw(model, cim, im):
     shape_ori = im.shape
     if im.shape[0] % cim.hgh != 0:
         im = np.lib.pad(
@@ -31,8 +31,8 @@ def combine_im(model, cim, im):
         im = np.lib.pad(
             im, ((0, 0), (0, cim.wid - im.shape[1] % cim.wid)), 'edge')
 
-    iml = each_im(model, cim, im, 'l')
-    ims = each_im(model, cim, im, 's')
+    iml = combine_im(model, cim, im, 'l')
+    ims = combine_im(model, cim, im, 's')
 
     im = np.maximum(iml, ims)
     im = im[0:shape_ori[0], 0:shape_ori[1]]
@@ -41,7 +41,7 @@ def combine_im(model, cim, im):
 
 
 # get image directly output from classifier
-def each_im(model, cim, im, imtype):
+def combine_im(model, cim, im, imtype):
     if imtype == 'l':
         d = 0
     elif imtype == 's':

@@ -1,8 +1,7 @@
 from imclass import ImClass
-from processing import infer_im
-
 import pickle
 import os
+from processing import infer_im
 
 
 # inferrence step

@@ -4,6 +4,12 @@ from infer import infer_step
 import configparser
 import sys
 import os
+from datetime import datetime
+
+"""
+why not 
+from datetime.datetime import now
+"""
 
 
 # start segmentation based on .ini
@@ -12,6 +18,9 @@ def Cell_Segmentation():
         raise SyntaxError(
             "Expect: 2 args Actual: {0} args.".format(len(sys.argv)))
 
+    print("Start Cell Segmentation.")
+    print(datetime.now().strftime("%Y/%m/%d %H:%M:%S"))
+
     config = configparser.ConfigParser()
     config.read(sys.argv[1])
 
@@ -19,7 +28,7 @@ def Cell_Segmentation():
         raise FileNotFoundError("no ini file found: {}.".format(sys.argv[1]))
 
     if sys.argv[1].startswith('train_infer') and sys.argv[1].endswith('.ini'):
-        print("train and infer.")
+        print("Train and infer.")
         fname_train = "data/" + config['paths']['filename train']
         fname_label = "data/" + config['paths']['filename label']
         fname_model = "data/" + config['paths']['filename model']
@@ -50,7 +59,7 @@ def Cell_Segmentation():
         print("all done.")
 
     elif sys.argv[1].startswith('infer') and sys.argv[1].endswith('.ini'):
-        print("infer.")
+        print("Only Infer.")
         fname_model = "data/" + config['paths']['filename model']
         fname_infer = "data/" + config['paths']['filename infer']
         fname_save = "result/" + config['paths']['filename save']

@@ -11,6 +11,7 @@ def train_step(fname_train="", fname_label="", fname_model="",
                N_train=25000, N_test=3000, N_epoch=1, batchsize=100, hgh=32, wid=32):
 
     print("start training.")
+    print("N_train: ", N_train, "N_test", N_test, "hgh", hgh, "wid", wid)
 
     cim = ImClass('train', fname_train=fname_train, fname_label=fname_label,
                   N_train=N_train, N_test=N_test, hgh=hgh, wid=wid)
@@ -29,11 +30,13 @@ def train_step(fname_train="", fname_label="", fname_model="",
             train_loss_tmp, train_acc_tmp = training_epoch(
                 i, model, cim, optimizer, batchsize)
 
+            print(train_loss_tmp, train_acc_tmp)
+
             sum_loss += float(train_loss_tmp) * batchsize
             sum_acc += float(train_acc_tmp) * batchsize
 
-            if i % 5000 == 0:
-                print("training:", i, "/", N_train,
+            if i == 0 or (i + batchsize) % 5000 == 0:
+                print("training:", i + batchsize, "/", N_train,
                       "loss:", "{:.3f}".format(float(train_loss_tmp)),
                       "acc:", "{:.3f}".format(float(train_acc_tmp)))
 
@@ -43,10 +46,12 @@ def train_step(fname_train="", fname_label="", fname_model="",
         sum_acc = 0.0
         for i in range(0, N_test, batchsize):
             test_acc_tmp = testing_epoch(i, model, cim, batchsize)
+
+            print(test_acc_tmp)
             sum_acc += float(test_acc_tmp) * batchsize
 
-            if i % 1000 == 0:
-                print("testing:", i, "/", N_test,
+            if (i + batchsize) % 1000 == 0:
+                print("testing:", i + batchsize, "/", N_test,
                       "acc:", "{:.3f}".format(float(test_acc_tmp)))
 
         test_acc = sum_acc / N_test

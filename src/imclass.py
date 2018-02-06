@@ -24,7 +24,8 @@ class ImClass:
                 raise ValueError(
                     "Number of images in two folders or files are different: \
                      {0} and {1}".format(fname_train, fname_label))
-            if ims_train.shape[1] != ims_label.shape[1] or ims_train.shape[2] != ims_label.shape[2]:
+            if ims_train.shape[1] != ims_label.shape[1] or \
+                    ims_train.shape[2] != ims_label.shape[2]:
                 raise ValueError(
                     "Size of training images and label images are not same.")
 
@@ -173,7 +174,8 @@ class ImClass:
         ims_train_testing = ims_train_tmp[N_train:N_train + N_test]
         ims_label_testing = ims_label_tmp[N_train:N_train + N_test]
 
-        return ims_train_training, ims_label_training, ims_train_testing, ims_label_testing
+        return ims_train_training, ims_label_training, \
+            ims_train_testing, ims_label_testing
 
     # get criteria of whether suitable or not
     def _getBound(self, im_label):

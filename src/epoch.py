@@ -3,52 +3,26 @@ from chainer import Variable
 
 
 # train model in each epoch
-def training_epoch(model, optimizer, x_train, t_train, batchsize=100):
-    print("train epoch")
-    N_train = t_train.shape[0]
-    perm = np.random.permutation(N_train)
-    sum_loss, sum_acc = 0, 0
+def training_epoch(i, model, cim, optimizer, batchsize=100):
+    x_batch = Variable(cim.get_x_training_batch(i, batchsize))
+    t_batch = Variable(cim.get_t_training_batch(i, batchsize))
 
-    for i in range(0, N_train, batchsize):
-        x_batch = Variable(x_train[perm[i:i + batchsize]])
-        t_batch = Variable(t_train[perm[i:i + batchsize]])
+    model.zerograds()
+    loss, acc = model(x_batch, t_batch)
+    loss.backward()
+    optimizer.update()
 
-        model.zerograds()
-        loss, acc = model(x_batch, t_batch)
-        loss.backward()
-        optimizer.update()
-
-        sum_loss += float(loss.data) * batchsize
-        sum_acc += float(acc.data) * batchsize
-        if i % 5000 == 0:
-            print("training:", i, "/", N_train,
-                  "loss:", "{:.3f}".format(float(loss.data)),
-                  "acc:", "{:.3f}".format(float(acc.data)))
-
-    train_loss, train_acc = sum_loss / N_train, sum_acc / N_train
-
-    return train_loss, train_acc
+    return loss.data, acc.data
 
 
 # test accuracy in each epoch
-def testing_epoch(model, x_test, t_test, batchsize=100):
-    print("test epoch")
-    N_test = t_test.shape[0]
-    sum_acc = 0
+def testing_epoch(i, model, cim, batchsize=100):
+    x_batch = Variable(cim.get_x_testing_batch(i, batchsize))
+    t_batch = Variable(cim.get_t_testing_batch(i, batchsize))
 
-    for i in range(0, N_test, batchsize):
-        x_batch = Variable(x_test[i:i + batchsize])
-        t_batch = Variable(t_test[i:i + batchsize])
+    _, acc = model(x_batch, t_batch)
 
-        _, acc = model(x_batch, t_batch)
-        sum_acc += float(acc.data) * batchsize
-
-        if i % 1000 == 0:
-            print("testing:", i, "acc:", "{:.3f}".format(float(acc.data)))
-
-    test_acc = sum_acc / N_test
-
-    return test_acc
+    return acc.data
 
 
 # infer images through classifiers

@@ -2,6 +2,7 @@ import numpy as np
 from cv2 import connectedComponents
 from PIL import Image
 import os
+from random import shuffle
 import warnings
 
 
@@ -17,6 +18,23 @@ class ImClass:
         self.shapet = [self.hgh, self.wid]
 
         if usetype == 'train':
+            self.__ims_train = self._load_ims_train(fname_train)
+            self.__ims_label = self._load_ims_label(fname_label)
+
+            if self.__ims_train.shape[0] != self.__ims_label.shape[0]:
+                raise ValueError(
+                    "Number of images in two folders or files are different: \
+                     {0} and {1}".format(fname_train, fname_label))
+            if self.__ims_train.shape[1] != self.__ims_label.shape[1] or \
+                    self.__ims_train.shape[2] != self.__ims_label.shape[2]:
+                raise ValueError(
+                    "Size of training images and label images are not same.")
+
+            self.__poss_training, self.__poss_testing = \
+                self._make_dataset(
+                    self.__ims_label, N_train, N_test)
+
+            """
             ims_train = self._load_ims_train(fname_train)
             ims_label = self._load_ims_label(fname_label)
 
@@ -30,8 +48,8 @@ class ImClass:
                     "Size of training images and label images are not same.")
 
             self.imdata_pkl = self._make_pkl(
-                ims_train, ims_label, N_test, N_train)
-
+                ims_train, ims_label, N_train, N_test)
+            """
         elif usetype == 'infer':
             if os.path.isfile(fname_infer):
                 self.type_infer = 'file'
@@ -122,25 +140,13 @@ class ImClass:
 
         return ims
 
-    # make file that all images packed in
-    def _make_pkl(self, im_train, im_label, N_test, N_train):
-        imdata_pkl = {}
-        imdata_pkl['train_training'], imdata_pkl['label_training'], \
-            imdata_pkl['train_testing'], imdata_pkl['label_testing'] \
-            = self._pickimages(im_train, im_label, N_test, N_train)
-        return imdata_pkl
-
-    # load batches
-    def load_batch(self):
-        return self.imdata_pkl['train_training'], self.imdata_pkl['label_training'], \
-            self.imdata_pkl['train_testing'], self.imdata_pkl['label_testing']
-
     # choose images suitable for small training images
-    def _pickimages(self, ims_train, ims_label, N_test, N_train):
-        N_each = int((N_train + N_test) / ims_train.shape[0])
-        ims_train_tmp, ims_label_tmp = [], []
+    def _make_dataset(self, ims_label, N_train, N_test):
+        N_each = int((N_train + N_test) / ims_label.shape[0])
 
-        for i, (im_train, im_label) in enumerate(zip(ims_train, ims_label)):
+        poss = []
+
+        for i, im_label in enumerate(ims_label):
             bound = self._getBound(im_label)
             xs, ys = np.where(bound == True)
 
@@ -153,29 +159,21 @@ class ImClass:
             xs, ys = xs[perm[0:2 * N_each]], ys[perm[0:2 * N_each]]
 
             count = 0
-            for i in range(2 * N_each):
-                x, y = xs[i], ys[i]
+            for j in range(2 * N_each):
+                x, y = xs[j], ys[j]
                 if self._isInBound(bound, x, y):
-                    im_train_cut = im_train[x:x + self.hgh, y:y + self.wid]
-                    im_label_cut = im_label[x:x + self.hgh, y:y + self.wid]
-                    ims_train_tmp.append(im_train_cut)
-                    ims_label_tmp.append(im_label_cut)
+                    pos = (i, (x, y))
+                    poss.append(pos)
                     count += 1
                     if count >= N_each:
                         break
 
-        ims_train_tmp = np.asarray(ims_train_tmp, np.float32)
-        ims_label_tmp = np.asarray(ims_label_tmp, np.int32)
-        ims_train_tmp = ims_train_tmp.reshape([-1] + self.shapex)
-        ims_label_tmp = ims_label_tmp.reshape([-1] + self.shapet)
+        shuffle(poss)
 
-        ims_train_training = ims_train_tmp[0:N_train]
-        ims_label_training = ims_label_tmp[0:N_train]
-        ims_train_testing = ims_train_tmp[N_train:N_train + N_test]
-        ims_label_testing = ims_label_tmp[N_train:N_train + N_test]
+        poss_training = poss[0:N_train]
+        poss_testing = poss[N_train:N_train + N_test]
 
-        return ims_train_training, ims_label_training, \
-            ims_train_testing, ims_label_testing
+        return poss_training, poss_testing
 
     # get criteria of whether suitable or not
     def _getBound(self, im_label):
@@ -190,6 +188,48 @@ class ImClass:
         return x + self.hgh < bound.shape[0] and y + self.wid < bound.shape[1] \
             and bound[x + self.hgh, y] and bound[x, y + self.wid] \
             and bound[x + self.hgh, y + self.wid]
+
+    def get_x_training_batch(self, i, batchsize):
+        poss = self.__poss_training[i:i + batchsize]
+        x_batch = self._make_x_batch(self.__ims_train, poss)
+        return x_batch
+
+    def get_t_training_batch(self, i, batchsize):
+        poss = self.__poss_training[i:i + batchsize]
+        t_batch = self._make_t_batch(self.__ims_label, poss)
+        return t_batch
+
+    def get_x_testing_batch(self, i, batchsize):
+        poss = self.__poss_testing[i:i + batchsize]
+        x_batch = self._make_x_batch(self.__ims_train, poss)
+        return x_batch
+
+    def get_t_testing_batch(self, i, batchsize):
+        poss = self.__poss_testing[i:i + batchsize]
+        t_batch = self._make_t_batch(self.__ims_label, poss)
+        return t_batch
+
+    def _make_x_batch(self, ims, poss):
+        batch = []
+        for pos in poss:
+            im = ims[pos[0]]
+            (x, y) = pos[1]
+            im_cut = im[x:x + self.hgh, y:y + self.wid]
+            batch.append(im_cut)
+        batch = np.asarray(batch, np.float32)
+        batch = batch.reshape([-1] + self.shapex)
+        return batch
+
+    def _make_t_batch(self, ims, poss):
+        batch = []
+        for pos in poss:
+            im = ims[pos[0]]
+            (x, y) = pos[1]
+            im_cut = im[x:x + self.hgh, y:y + self.wid]
+            batch.append(im_cut)
+        batch = np.asarray(batch, np.int32)
+        batch = batch.reshape([-1] + self.shapet)
+        return batch
 
     # load num-th whole image
     def read_im_file(self, num):

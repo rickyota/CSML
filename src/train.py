@@ -14,32 +14,47 @@ def train_step(fname_train="", fname_label="", fname_model="",
 
     cim = ImClass('train', fname_train=fname_train, fname_label=fname_label,
                   N_train=N_train, N_test=N_test, hgh=hgh, wid=wid)
-    train_training, label_training, train_testing, label_testing = cim.load_batch()
-    print("shapes:", train_training.shape, label_training.shape,
-          train_testing.shape, label_testing.shape)
 
     model = FCN()
     optimizer = Adam()
     optimizer.setup(model)
 
-    train_loss, train_acc, test_acc = [], [], []
-
     # Learning loop
     for epoch in range(1, N_epoch + 1):
         print("epoch: ", epoch, "/", N_epoch)
+
         # training
-        (train_loss_tmp, train_acc_tmp) = training_epoch(
-            model, optimizer, train_training, label_training, batchsize)
-        train_loss.append(train_loss_tmp), train_acc.append(train_acc_tmp)
+        sum_loss, sum_acc = 0.0, 0.0
+        for i in range(0, N_train, batchsize):
+            train_loss_tmp, train_acc_tmp = training_epoch(
+                i, model, cim, optimizer, batchsize)
 
-        # evaluation
-        test_acc_tmp = testing_epoch(
-            model, train_testing, label_testing, batchsize)
-        test_acc.append(test_acc_tmp)
+            sum_loss += float(train_loss_tmp) * batchsize
+            sum_acc += float(train_acc_tmp) * batchsize
 
-        print("train_loss", "train_acc", "test_acc", "\n",
-              "{:.3f}".format(train_loss_tmp), "{:.3f}".format(train_acc_tmp),
-              "{:.3f}".format(test_acc_tmp))
+            if i % 5000 == 0:
+                print("training:", i, "/", N_train,
+                      "loss:", "{:.3f}".format(float(train_loss_tmp)),
+                      "acc:", "{:.3f}".format(float(train_acc_tmp)))
+
+        train_loss, train_acc = sum_loss / N_train, sum_acc / N_train
+
+        # testing
+        sum_acc = 0.0
+        for i in range(0, N_test, batchsize):
+            test_acc_tmp = testing_epoch(i, model, cim, batchsize)
+            sum_acc += float(test_acc_tmp) * batchsize
+
+            if i % 1000 == 0:
+                print("testing:", i, "/", N_test,
+                      "acc:", "{:.3f}".format(float(test_acc_tmp)))
+
+        test_acc = sum_acc / N_test
+
+        print("epoch: ", epoch, "result", "\n",
+              "train_loss", "{:.3f}".format(train_loss), "\n",
+              "train_acc", "{:.3f}".format(train_acc), "\n",
+              "test_acc", "{:.3f}".format(test_acc))
 
     data_model = {}
     data_model['model'] = model

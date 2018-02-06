@@ -25,7 +25,7 @@ def infer_step(fname_infer="", fname_save="", fname_model="",
     cim.change_hgh_wid(data_model['shape'])
     print("Info of FCN Classifier: \n",
           "\t", "hgh,wid", data_model['shape'], "\n",
-          "\t", "test acc", "{:.3f}".format(data_model['testacc'][-1]))
+          "\t", "test acc", "{:.3f}".format(data_model['testacc']))
 
     if cim.type_infer == 'folder':
         num_im = len(cim.fnames_infer)

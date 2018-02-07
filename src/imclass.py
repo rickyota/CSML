@@ -8,7 +8,8 @@ import warnings
 
 class ImClass:
 
-    def __init__(self, usetype,  fname_train="", fname_label="", fname_infer="", fname_inferred="",
+    def __init__(self, usetype,  fname_train="", fname_label="",
+                 fname_infer="", fname_inferred="",
                  N_train=25000, N_test=3000, hgh=32, wid=32):
 
         # input size of classifier

@@ -34,22 +34,6 @@ class ImClass:
                 self._make_dataset(
                     self.__ims_label, N_train, N_test)
 
-            """
-            ims_train = self._load_ims_train(fname_train)
-            ims_label = self._load_ims_label(fname_label)
-
-            if ims_train.shape[0] != ims_label.shape[0]:
-                raise ValueError(
-                    "Number of images in two folders or files are different: \
-                     {0} and {1}".format(fname_train, fname_label))
-            if ims_train.shape[1] != ims_label.shape[1] or \
-                    ims_train.shape[2] != ims_label.shape[2]:
-                raise ValueError(
-                    "Size of training images and label images are not same.")
-
-            self.imdata_pkl = self._make_pkl(
-                ims_train, ims_label, N_train, N_test)
-            """
         elif usetype == 'infer':
             if os.path.isfile(fname_infer):
                 self.type_infer = 'file'
@@ -159,7 +143,7 @@ class ImClass:
             xs, ys = xs[perm[0:2 * N_each]], ys[perm[0:2 * N_each]]
 
             count = 0
-            for j in range(2 * N_each):
+            for j in range(xs.shape[0]):
                 x, y = xs[j], ys[j]
                 if self._isInBound(bound, x, y):
                     pos = (i, (x, y))

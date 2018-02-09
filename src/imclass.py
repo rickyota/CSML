@@ -153,6 +153,11 @@ class ImClass:
                     if count >= N_each:
                         break
 
+        if len(poss) < N_train + N_test:
+            raise ValueError(
+                "Training image set cannot be made. Decrease 'number train' or \
+                spread contoured region in label images.")
+
         shuffle(poss)
 
         poss_training = poss[0:N_train]

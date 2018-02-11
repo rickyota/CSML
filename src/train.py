@@ -40,7 +40,7 @@ def train_step(fname_train="", fname_label="", fname_model="",
 
         train_loss, train_acc = sum_loss_training / N_train, sum_acc_training / N_train
 
-    # evaluation
+    # testing
     sum_acc_testing = 0.0
     for i in range(0, N_test, batchsize):
         test_acc_tmp = testing_epoch(i, model, cim, batchsize)

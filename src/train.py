@@ -40,24 +40,22 @@ def train_step(fname_train="", fname_label="", fname_model="",
 
         train_loss, train_acc = sum_loss_training / N_train, sum_acc_training / N_train
 
-    # testing
-    sum_acc_training = 0.0
-    for i in range(0, N_test, batchsize):
-        test_acc_tmp = testing_epoch(i, model, cim, batchsize)
+        # evaluation
+        sum_acc_testing = 0.0
+        for i in range(0, N_test, batchsize):
+            test_acc_tmp = testing_epoch(i, model, cim, batchsize)
+            sum_acc_testing += float(test_acc_tmp) * batchsize
 
-        print(test_acc_tmp)
-        sum_acc_training += float(test_acc_tmp) * batchsize
+            if (i + batchsize) % 1000 == 0:
+                print("testing:", i + batchsize, "/", N_test,
+                      "acc:", "{:.3f}".format(float(test_acc_tmp)))
 
-        if (i + batchsize) % 1000 == 0:
-            print("testing:", i + batchsize, "/", N_test,
-                  "acc:", "{:.3f}".format(float(test_acc_tmp)))
+        test_acc = sum_acc_testing / N_test
 
-    test_acc = sum_acc_training / N_test
-
-    print("result", "epoch:", epoch, "\n",
-          "train_loss:", "{:.3f}".format(train_loss), "\n",
-          "train_acc:", "{:.3f}".format(train_acc), "\n",
-          "test_acc:", "{:.3f}".format(test_acc))
+        print("result", "epoch:", epoch, "\n",
+              "train_loss:", "{:.3f}".format(train_loss), "\n",
+              "train_acc:", "{:.3f}".format(train_acc), "\n",
+              "test_acc:", "{:.3f}".format(test_acc))
 
     data_model = {}
     data_model['model'] = model

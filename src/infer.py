@@ -54,7 +54,7 @@ def infer_step(fname_infer="", fname_save="", fname_model="",
             raise MemoryError(
                 e, "Too many images to be inferred. Decrease number of images.")
 
-    print("Done infering.")
+    print("Done inferring.")
 
 
 if __name__ == '__main__':

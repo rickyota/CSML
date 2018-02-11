@@ -127,7 +127,7 @@ class ImClass:
 
     # choose images suitable for small training images
     def _make_dataset(self, ims_label, N_train, N_test):
-        N_each = int((N_train + N_test) / ims_label.shape[0])
+        N_each = int((N_train + N_test) / ims_label.shape[0]) + 1
 
         poss = []
 

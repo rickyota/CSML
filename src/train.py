@@ -10,8 +10,8 @@ import pickle
 def train_step(fname_train="", fname_label="", fname_model="",
                N_train=25000, N_test=3000, N_epoch=1, batchsize=100, hgh=32, wid=32):
 
-    print("start training.")
-    print("N_train: ", N_train, "N_test", N_test, "hgh", hgh, "wid", wid)
+    print("Start training.")
+    print("N_train:", N_train, "N_test:", N_test, "hgh:", hgh, "wid:", wid)
 
     cim = ImClass('train', fname_train=fname_train, fname_label=fname_label,
                   N_train=N_train, N_test=N_test, hgh=hgh, wid=wid)
@@ -22,44 +22,42 @@ def train_step(fname_train="", fname_label="", fname_model="",
 
     # Learning loop
     for epoch in range(1, N_epoch + 1):
-        print("epoch: ", epoch, "/", N_epoch)
+        print("epoch:", epoch, "/", N_epoch)
 
         # training
-        sum_loss, sum_acc = 0.0, 0.0
+        sum_loss_training, sum_acc_training = 0.0, 0.0
         for i in range(0, N_train, batchsize):
             train_loss_tmp, train_acc_tmp = training_epoch(
                 i, model, cim, optimizer, batchsize)
 
-            print(train_loss_tmp, train_acc_tmp)
-
-            sum_loss += float(train_loss_tmp) * batchsize
-            sum_acc += float(train_acc_tmp) * batchsize
+            sum_loss_training += float(train_loss_tmp) * batchsize
+            sum_acc_training += float(train_acc_tmp) * batchsize
 
             if i == 0 or (i + batchsize) % 5000 == 0:
                 print("training:", i + batchsize, "/", N_train,
                       "loss:", "{:.3f}".format(float(train_loss_tmp)),
                       "acc:", "{:.3f}".format(float(train_acc_tmp)))
 
-        train_loss, train_acc = sum_loss / N_train, sum_acc / N_train
+        train_loss, train_acc = sum_loss_training / N_train, sum_acc_training / N_train
 
-        # testing
-        sum_acc = 0.0
-        for i in range(0, N_test, batchsize):
-            test_acc_tmp = testing_epoch(i, model, cim, batchsize)
+    # testing
+    sum_acc_training = 0.0
+    for i in range(0, N_test, batchsize):
+        test_acc_tmp = testing_epoch(i, model, cim, batchsize)
 
-            print(test_acc_tmp)
-            sum_acc += float(test_acc_tmp) * batchsize
+        print(test_acc_tmp)
+        sum_acc_training += float(test_acc_tmp) * batchsize
 
-            if (i + batchsize) % 1000 == 0:
-                print("testing:", i + batchsize, "/", N_test,
-                      "acc:", "{:.3f}".format(float(test_acc_tmp)))
+        if (i + batchsize) % 1000 == 0:
+            print("testing:", i + batchsize, "/", N_test,
+                  "acc:", "{:.3f}".format(float(test_acc_tmp)))
 
-        test_acc = sum_acc / N_test
+    test_acc = sum_acc_training / N_test
 
-        print("epoch: ", epoch, "result", "\n",
-              "train_loss", "{:.3f}".format(train_loss), "\n",
-              "train_acc", "{:.3f}".format(train_acc), "\n",
-              "test_acc", "{:.3f}".format(test_acc))
+    print("result", "epoch:", epoch, "\n",
+          "train_loss:", "{:.3f}".format(train_loss), "\n",
+          "train_acc:", "{:.3f}".format(train_acc), "\n",
+          "test_acc:", "{:.3f}".format(test_acc))
 
     data_model = {}
     data_model['model'] = model
@@ -68,7 +66,7 @@ def train_step(fname_train="", fname_label="", fname_model="",
     with open(fname_model, 'wb') as p:
         pickle.dump(data_model, p, -1)
 
-    print("done training.")
+    print("Done training.")
 
 
 if __name__ == '__main__':

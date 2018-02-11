@@ -8,7 +8,7 @@ from processing import infer_im
 def infer_step(fname_infer="", fname_save="", fname_model="",
                thre_discard=1000, wid_dilate=1, thre_fill=1):
 
-    print("start inferring.")
+    print("Start inferring.")
 
     cim = ImClass('infer', fname_infer=fname_infer, fname_inferred=fname_save)
 
@@ -54,7 +54,7 @@ def infer_step(fname_infer="", fname_save="", fname_model="",
             raise MemoryError(
                 e, "Too many images to be inferred. Decrease number of images.")
 
-    print("done infering.")
+    print("Done infering.")
 
 
 if __name__ == '__main__':

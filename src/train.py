@@ -28,7 +28,7 @@ def train_step(fname_train="", fname_label="", fname_model="",
         sum_loss_training, sum_acc_training = 0.0, 0.0
         for i in range(0, N_train, batchsize):
             train_loss_tmp, train_acc_tmp = training_epoch(
-                i, model, cim, optimizer, batchsize)
+                i, cim, model, optimizer, batchsize)
 
             sum_loss_training += float(train_loss_tmp) * batchsize
             sum_acc_training += float(train_acc_tmp) * batchsize
@@ -43,7 +43,7 @@ def train_step(fname_train="", fname_label="", fname_model="",
     # testing
     sum_acc_testing = 0.0
     for i in range(0, N_test, batchsize):
-        test_acc_tmp = testing_epoch(i, model, cim, batchsize)
+        test_acc_tmp = testing_epoch(i, cim, model, batchsize)
         sum_acc_testing += float(test_acc_tmp) * batchsize
 
         if (i + batchsize) % 1000 == 0:

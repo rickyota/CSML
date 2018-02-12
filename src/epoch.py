@@ -3,7 +3,7 @@ from chainer import Variable
 
 
 # train model in each epoch
-def training_epoch(i, model, cim, optimizer, batchsize=100):
+def training_epoch(i, cim, model, optimizer, batchsize=100):
     x_batch = Variable(cim.get_x_training_batch(i, batchsize))
     t_batch = Variable(cim.get_t_training_batch(i, batchsize))
 
@@ -16,7 +16,7 @@ def training_epoch(i, model, cim, optimizer, batchsize=100):
 
 
 # test accuracy in each epoch
-def testing_epoch(i, model, cim, batchsize=100):
+def testing_epoch(i, cim, model, batchsize=100):
     x_batch = Variable(cim.get_x_testing_batch(i, batchsize))
     t_batch = Variable(cim.get_t_testing_batch(i, batchsize))
 

@@ -4,8 +4,8 @@ Software based on this code is distributed on [(Releases)](https://github.com/Ri
 Details are on [(Wiki)](https://github.com/RickyOta/CSML/wiki).
 
 ## Description
-Return segmented images of fluorescent inference images, inferred by FCN classifier.  
-Classifier is optimized by training and corresponding label images.  
+CSML returns segmented images of fluorescent inference images, inferred by FCN classifier.  
+Classifier is optimized by training and corresponding labeled images.  
 
 
 ## Usage of Software
@@ -32,7 +32,7 @@ Classifier is optimized by training and corresponding label images.
 ---
 
 ##  Usage of Codes
-Please refer to this section, if you want to run the codes directly.
+Please refer to this section if you want to run the codes directly.
 
 ### Requirement
 - Python >=3.6
@@ -48,8 +48,8 @@ git clone https://github.com/RickyOta/CSML.git
 
 ### Usage
 1. Add images to ```CSML/data/```. The format can be a folder containing images, one tiff file or one other image file.
-1. Edit values in ```CSML/train_infer.ini``` for training and inference or ```CSML/infer.ini``` for only inference.  
-	you can edit ini file name as long as started with 'train_infer' or 'infer'.
+1. Edit values in ```CSML/train_infer_example.ini``` for training and inference or in ```CSML/infer_example.ini``` for only inference.  
+	You can edit ini file name as long as started with 'train_infer' or 'infer'.
 1. Execute
 	```
 	# for training classifier and inferring images 

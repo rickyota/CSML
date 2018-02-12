@@ -59,7 +59,7 @@ class FCN(Chain):
             x_batch_st = self.im_stan(x_batch.data)
             x_batch_st_med = np.max(x_batch_st, axis=(2, 3)) / 2
             x_batch_st_med = x_batch_st_med.reshape(
-                [x_batch.data.shape[0], x_batch.data.shape[1], 1, 1])
+                (x_batch.data.shape[0], x_batch.data.shape[1], 1, 1))
             x_batch_sig = self.im_sigmoid(x_batch_st, x_batch_st_med, 1)
             x_batch_stan = self.im_stan(x_batch_sig)
             x_batch_stan = x_batch_stan.astype(np.float32)
@@ -75,9 +75,9 @@ class FCN(Chain):
         if np.any(x_batch_std == 0):
             raise ZeroDivisionError("x_batch_std contains 0")
         x_batch_mean = x_batch_mean.reshape(
-            [x_batch.shape[0], x_batch.shape[1], 1, 1])
+            (x_batch.shape[0], x_batch.shape[1], 1, 1))
         x_batch_std = x_batch_std.reshape(
-            [x_batch.shape[0], x_batch.shape[1], 1, 1])
+            (x_batch.shape[0], x_batch.shape[1], 1, 1))
         x_batch_stan = (x_batch - x_batch_mean) / x_batch_std
         return x_batch_stan
 

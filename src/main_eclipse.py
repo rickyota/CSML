@@ -34,7 +34,7 @@ def Cell_Segmentation():
                    hgh=hgh, wid=wid)
         infer_step(fname_infer=fname_infer, fname_save=fname_save, fname_model=fname_model,
                    thre_discard=thre_discard, wid_dilate=wid_dilate, thre_fill=thre_fill)
-        print("all done.")
+        print("All done.")
 
     elif segtype == 'infer':
         # filenames for infer
@@ -49,7 +49,7 @@ def Cell_Segmentation():
 
         infer_step(fname_infer=fname_infer, fname_save=fname_save, fname_model=fname_model,
                    thre_discard=thre_discard, wid_dilate=wid_dilate, thre_fill=thre_fill)
-        print("all done.")
+        print("All done.")
 
 
 if __name__ == '__main__':

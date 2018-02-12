@@ -52,7 +52,7 @@ def train_step(fname_train="", fname_label="", fname_model="",
 
     test_acc = sum_acc_testing / N_test
 
-    print("result", "\n",
+    print("Result", "\n",
           "train_loss:", "{:.3f}".format(train_loss), "\n",
           "train_acc:", "{:.3f}".format(train_acc), "\n",
           "test_acc:", "{:.3f}".format(test_acc))

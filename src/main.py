@@ -6,11 +6,6 @@ import sys
 import os
 from datetime import datetime
 
-"""
-why not 
-from datetime.datetime import now
-"""
-
 
 # start segmentation based on .ini
 def Cell_Segmentation():
@@ -25,7 +20,7 @@ def Cell_Segmentation():
     config.read(sys.argv[1])
 
     if not os.path.exists(sys.argv[1]):
-        raise FileNotFoundError("no ini file found: {}.".format(sys.argv[1]))
+        raise FileNotFoundError("No ini file found: {}.".format(sys.argv[1]))
 
     if sys.argv[1].startswith('train_infer') and sys.argv[1].endswith('.ini'):
         print("Train and infer.")
@@ -56,7 +51,7 @@ def Cell_Segmentation():
                        thre_discard=thre_discard, wid_dilate=wid_dilate, thre_fill=thre_fill)
         except Exception as e:
             raise Exception(e, "Got an error in inference step.")
-        print("all done.")
+        print("All done.")
 
     elif sys.argv[1].startswith('infer') and sys.argv[1].endswith('.ini'):
         print("Only Infer.")
@@ -73,7 +68,7 @@ def Cell_Segmentation():
                        thre_discard=thre_discard, wid_dilate=wid_dilate, thre_fill=thre_fill)
         except Exception as e:
             raise Exception(e, "Got an error in inference step.")
-        print("all done.")
+        print("All done.")
 
 
 if __name__ == '__main__':

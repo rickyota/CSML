@@ -22,9 +22,6 @@ Classifier is optimized by training and corresponding labeled images.
 1. Get segmented images file in output folder.
 
 
-## Publication
-
-
 ## Author
 [R. Ota](https://github.com/RickyOta)  
 [R. Nakabayashi](https://github.com/ryought) (for help of creating software)
@@ -49,7 +46,7 @@ git clone https://github.com/RickyOta/CSML.git
 ### Usage
 1. Add images to ```CSML/data/```. The format can be a folder containing images, one tiff file or one other image file.
 1. Edit values in ```CSML/train_infer_example.ini``` for training and inference or in ```CSML/infer_example.ini``` for only inference.  
-	You can edit ini file name as long as started with 'train_infer' or 'infer'.
+	You can edit ini file name as long as it starts with 'train_infer' or 'infer'.
 1. Execute
 	```
 	# for training classifier and inferring images 

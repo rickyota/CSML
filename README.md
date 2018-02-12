@@ -22,7 +22,7 @@ Classifier is optimized by training and corresponding labeled images.
 1. Get segmented images file in output folder.
 
 
-## Author
+## Authors
 [R. Ota](https://github.com/RickyOta)  
 [R. Nakabayashi](https://github.com/ryought) (for help of creating software)
 

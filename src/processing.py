@@ -95,7 +95,6 @@ def postprocessing(im, thre_discard, wid_dilate, thre_fill):
 def discard(im, threshold):
     im = np.uint8(im)
     n, im_label, stats, _ = connectedComponentsWithStats(im, connectivity=4)
-    # OK? added np.int8
     im_discard = np.zeros_like(im, np.uint8)
     for i in range(1, n):
         if stats[i, CC_STAT_AREA] > threshold:

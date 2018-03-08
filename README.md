@@ -11,20 +11,28 @@ Classifier is optimized by training and corresponding labeled images.
 ## Usage of Software
 1. Launch CSML.exe.
 1. Train model (only for the first time).
-	1. Drag & Drop the images file and the corresponding binary images file. Tiff files can be used for two or more images.
+	1. Drag & Drop the images file and the corresponding binary images file.  
+	1. Specify name of model.
 	1. Adjust the parameters if you want.
-	1. Press "Train" button.
+	1. Press "Start Training" button.
 1. Infer images.
-	1. Drag & Drop the images file which you want to segment.
-	1. Select output folder.
+	1. Drag & Drop the images file which you want to segment. 
+	1. Select the model which you want to use.
 	1. Adjust the parameters if you want.
-	1. Press "Infer" button.
+	1. Select output folder.
+	1. Press "Start Infering" button.
 1. Get segmented images file in output folder.
 
+### Notes
 
-## Author
+- Click "Run with Example" to use examples.
+- Format of Images can be a folder containing images, one tiff file or one other image file.  
+- Accuracy displayed in model list is dot accuracy.
+
+
+## Authors
 [R. Ota](https://github.com/RickyOta)  
-[R. Nakabayashi](https://github.com/ryought) (for help of creating software)
+[R. Nakabayashi](https://github.com/ryought) (for help creating software)
 
 ---
 

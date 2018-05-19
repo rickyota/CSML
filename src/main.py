@@ -11,7 +11,7 @@ from datetime import datetime
 def Cell_Segmentation():
     if len(sys.argv) != 2:
         raise SyntaxError(
-            "Expect: 2 args Actual: {0} args.".format(len(sys.argv)))
+            "Expect: 1 args Actual: {0} args.".format(len(sys.argv) - 1))
 
     print("Start Cell Segmentation.")
     print(datetime.now().strftime("%Y/%m/%d %H:%M:%S"))

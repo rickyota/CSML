@@ -260,6 +260,7 @@ class ImClass:
     def _get_listdir(self, fname):
         fnames = os.listdir(fname)
         fnames = list(filter(lambda f: not f.startswith("."), fnames))
+        fnames.sort()
         fnames = [fname + "/" + filename for filename in fnames]
         return fnames
 
@@ -267,6 +268,7 @@ class ImClass:
     def _get_listdir_inferred(self, fname_inferred, fname_infer):
         fnames = os.listdir(fname_infer)
         fnames = list(filter(lambda f: not f.startswith("."), fnames))
+        fnames.sort()
         fnames = [fname_inferred + "/" + filename for filename in fnames]
         fnames = [os.path.splitext(filename)[0] + '.png'
                   for filename in fnames]

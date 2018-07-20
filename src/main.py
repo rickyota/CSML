@@ -1,74 +1,105 @@
+import os
+from datetime import datetime
+import argparse
+import textwrap
+
 from train import train_step
 from infer import infer_step
 
-import configparser
-import sys
-import os
-from datetime import datetime
 
-
-# start segmentation based on .ini
 def Cell_Segmentation():
-    if len(sys.argv) != 2:
-        raise SyntaxError(
-            "Expect: 2 args Actual: {0} args.".format(len(sys.argv)))
 
     print("Start Cell Segmentation.")
     print(datetime.now().strftime("%Y/%m/%d %H:%M:%S"))
 
-    config = configparser.ConfigParser()
-    config.read(sys.argv[1])
+    args = argument()
 
-    if not os.path.exists(sys.argv[1]):
-        raise FileNotFoundError("No ini file found: {}.".format(sys.argv[1]))
-
-    if sys.argv[1].startswith('train_infer') and sys.argv[1].endswith('.ini'):
+    if not args.flaginfer:
         print("Train and infer.")
-        fname_train = "data/" + config['paths']['filename train']
-        fname_label = "data/" + config['paths']['filename label']
-        fname_model = "data/" + config['paths']['filename model']
-        fname_infer = "data/" + config['paths']['filename infer']
-        fname_save = "result/" + config['paths']['filename save']
-
-        N_train = int(config['training parameters']['number train'])
-        N_test = int(config['training parameters']['number test'])
-        N_epoch = int(config['default']['number epoch'])
-        batchsize = int(config['default']['number batch'])
-        hgh = int(config['training parameters']['height'])
-        wid = int(config['training parameters']['width'])
-
-        thre_discard = int(config['inference parameters']['threshold discard'])
-        wid_dilate = int(config['inference parameters']['width dilate'])
-        thre_fill = int(config['inference parameters']['threshold fill'])
-
         try:
-            train_step(fname_train=fname_train, fname_label=fname_label, fname_model=fname_model,
-                       N_test=N_test, N_train=N_train, N_epoch=N_epoch, batchsize=batchsize, hgh=hgh, wid=wid)
+            train_step(fname_train=os.path.join("data", args.train),
+                       fname_label=os.path.join("data", args.label),
+                       fname_model=os.path.join("data", args.model),
+                       N_test=args.ntest, N_train=args.ntrain, N_epoch=args.nepoch, batchsize=args.nbatch,
+                       hgh=args.height, wid=args.width,
+                       mode=args.mode)
         except Exception as e:
             raise Exception(e, "Got an error in training step.")
         try:
-            infer_step(fname_infer=fname_infer, fname_save=fname_save, fname_model=fname_model,
-                       thre_discard=thre_discard, wid_dilate=wid_dilate, thre_fill=thre_fill)
+            infer_step(fname_infer=os.path.join("data", args.infer),
+                       fname_save=os.path.join("result_local", args.output),
+                       fname_model=os.path.join("data", args.model),
+                       thre_discard=args.discard, wid_dilate=args.open)
         except Exception as e:
             raise Exception(e, "Got an error in inference step.")
+
         print("All done.")
 
-    elif sys.argv[1].startswith('infer') and sys.argv[1].endswith('.ini'):
+    else:
         print("Only Infer.")
-        fname_model = "data/" + config['paths']['filename model']
-        fname_infer = "data/" + config['paths']['filename infer']
-        fname_save = "result/" + config['paths']['filename save']
-
-        thre_discard = int(config['inference parameters']['threshold discard'])
-        wid_dilate = int(config['inference parameters']['width dilate'])
-        thre_fill = int(config['inference parameters']['threshold fill'])
-
         try:
-            infer_step(fname_infer=fname_infer, fname_save=fname_save, fname_model=fname_model,
-                       thre_discard=thre_discard, wid_dilate=wid_dilate, thre_fill=thre_fill)
+            infer_step(fname_infer=os.path.join("data", args.infer),
+                       fname_save=os.path.join("result_local", args.output),
+                       fname_model=os.path.join("data", args.model),
+                       thre_discard=args.discard, wid_dilate=args.open)
         except Exception as e:
             raise Exception(e, "Got an error in inference step.")
+
         print("All done.")
+
+
+def argument():
+    parser = argparse.ArgumentParser(
+        prog='CSML',
+        usage='Cell segmentation',
+        description='description',
+        epilog='description end',
+        add_help=True,
+        formatter_class=argparse.RawTextHelpFormatter
+    )
+
+    parser.add_argument('-f', '--flaginfer',
+                        help='Only inferrence',
+                        action='store_true')
+    parser.add_argument('-t', '--train', help='Train folder name',
+                        default='example_train')
+    parser.add_argument('-l', '--label', help='Label folder name',
+                        default='example_label')
+    parser.add_argument('-i', '--infer', help='Infer folder name',
+                        default='example_infer')
+    parser.add_argument('-o', '--output', help='Output folder name',
+                        default='example_result')
+    parser.add_argument('-m', '--model', help='Model file name',
+                        default='model_example.pkl')
+
+    parser.add_argument('-nr', '--ntrain', help='Number of training images',
+                        type=int, default=50000)
+    parser.add_argument('-ns', '--ntest', help='Number of testing images',
+                        type=int, default=3000)
+    parser.add_argument('-he', '--height', help='Height of patches',
+                        type=int, default=64)
+    parser.add_argument('-wi', '--width', help='Width of patches',
+                        type=int, default=64)
+    parser.add_argument('-td', '--discard', help='Threshold of discarding',
+                        type=int, default=100)
+    parser.add_argument('-wo', '--open', help='Width of opening',
+                        type=int, default=1)
+    parser.add_argument('-ne', '--nepoch', help='Number of epoch',
+                        type=int, default=1)
+    parser.add_argument('-nb', '--nbatch', help='Number of batch',
+                        type=int, default=100)
+    parser.add_argument('-mo', '--mode',
+                        help=textwrap.dedent('''\
+                        Way to choose train images
+                        back(default): the center of patch is not on background
+                        whole: whole patch is not on background, use when only part of image is labelled.
+                        all: all
+                        '''),
+                        default='back')
+
+    args = parser.parse_args()
+
+    return args
 
 
 if __name__ == '__main__':

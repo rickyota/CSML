@@ -1,12 +1,12 @@
 from imclass import ImClass
 import pickle
 import os
-from processing import infer_im
+from infer_im import infer_im
 
 
 # inferrence step
-def infer_step(fname_infer="", fname_save="", fname_model="",
-               thre_discard=1000, wid_dilate=1, thre_fill=1):
+def infer_step(fname_infer, fname_save, fname_model,
+               thre_discard, wid_dilate):
 
     print("Start inferring.")
 
@@ -27,47 +27,14 @@ def infer_step(fname_infer="", fname_save="", fname_model="",
           "\t", "hgh,wid", data_model['shape'], "\n",
           "\t", "test acc", "{:.3f}".format(data_model['testacc']))
 
-    if cim.type_infer == 'folder':
-        num_im = len(cim.fnames_infer)
-        for i in range(num_im):
-            im_infer = cim.read_im_folder(cim.fnames_infer[i])
-            im_inferred = infer_im(
-                model_infer, cim, im_infer, thre_discard, wid_dilate, thre_fill)
-            cim.save_im(im_inferred, cim.fnames_inferred[i])
+    num_im = len(cim.fnames_infer)
+    for i in range(num_im):
+        im_infer = cim.read_im(cim.fnames_infer[i])
+        im_inferred = infer_im(
+            model_infer, cim.shape, im_infer, thre_discard, wid_dilate)
+        cim.save_im(im_inferred, cim.fnames_inferred[i])
 
-            if i % 5 == 4:
-                print("Done inferring", i + 1, "/", num_im)
-
-    elif cim.type_infer == 'file':
-        num_im = cim.num_infer
-        ims_inferred = []
-        try:
-            for i in range(num_im):
-                im_infer = cim.read_im_file(i)
-                im_inferred = infer_im(
-                    model_infer, cim, im_infer, thre_discard, wid_dilate, thre_fill)
-                ims_inferred.append(im_inferred)
-                if i % 5 == 4:
-                    print("Done inferring", i + 1, "/", num_im)
-            cim.save_im(ims_inferred, fname_save)
-        except MemoryError as e:
-            raise MemoryError(
-                e, "Too many images to be inferred. Decrease number of images.")
+        if i % 5 == 4:
+            print("Done inferring", i + 1, "/", num_im)
 
     print("Done inferring.")
-
-
-if __name__ == '__main__':
-    # filenames for infer
-
-    fname_infer = "../data/embryos_infer.tiff"
-    fname_save = "../result/embryos_inferred.tiff"
-    fname_model = "../data/model.pkl"
-
-    # parameters for infer
-    thre_discard = 1000
-    wid_dilate = 1
-    thre_fill = 1
-
-    infer_step(fname_infer=fname_infer, fname_save=fname_save, fname_model=fname_model,
-               thre_discard=thre_discard, wid_dilate=wid_dilate, thre_fill=thre_fill)

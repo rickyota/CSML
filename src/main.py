@@ -1,25 +1,18 @@
 from train import train_step
 from infer import infer_step
 
-import configparser
-import sys
+
 import os
 from datetime import datetime
+import argparse
 
 
 def Cell_Segmentation():
-    if len(sys.argv) != 2:
-        raise SyntaxError(
-            "Expect: 1 args Actual: {0} args.".format(len(sys.argv) - 1))
 
     print("Start Cell Segmentation.")
     print(datetime.now().strftime("%Y/%m/%d %H:%M:%S"))
 
-    config = configparser.ConfigParser()
-    config.read(sys.argv[1])
-
-    if not os.path.exists(sys.argv[1]):
-        raise FileNotFoundError("No ini file found: {}.".format(sys.argv[1]))
+    args = argument()
 
     if sys.argv[1].startswith('train_infer') and sys.argv[1].endswith('.ini'):
         print("Train and infer.")
@@ -68,6 +61,53 @@ def Cell_Segmentation():
         except Exception as e:
             raise Exception(e, "Got an error in inference step.")
         print("All done.")
+
+
+def argument():
+    parser = argparse.ArgumentParser(
+        prog='CSML',
+        usage='Cell segmentation',
+        description='description',
+        epilog='description end',
+        add_help=True,
+    )
+
+    parser.add_argument('-f', '--flaginfer',
+                        help='Only inferrence',
+                        action='store_true')
+    parser.add_argument('-t', '--train', help='train folder name')
+    parser.add_argument('-l', '--label', help='label folder name')
+    parser.add_argument('-i', '--infer', help='infer folder name',
+                        default='research_infer')
+    parser.add_argument('-o', '--output', help='output folder name')
+    parser.add_argument('-m', '--model', help='model file name')
+
+    parser.add_argument('-nr', '--ntrain', help='number of training images',
+                        type=int, default=50000)
+    parser.add_argument('-ns', '--ntest', help='number of testing images',
+                        type=int, default=3000)
+    parser.add_argument('-he', '--height', help='height',
+                        type=int, default=64)
+    parser.add_argument('-wi', '--width', help='width',
+                        type=int, default=64)
+    parser.add_argument('-td', '--discard', help='threshold discard',
+                        type=int, default=100)
+    parser.add_argument('-wd', '--dilate', help='width dilation',
+                        type=int, default=1)
+    parser.add_argument('-ne', '--nepoch', help='number of epoch',
+                        type=int, default=1)
+    parser.add_argument('-nb', '--nbatch', help='number of batch',
+                        type=int, default=100)
+    parser.add_argument('-mo', '--mode', help='way to choose train images',
+                        default='back')
+    parser.add_argument('-in', '--interim', help='flag of save interm accuracy',
+                        action='store_true')
+    parser.add_argument('-inv', '--inversion', help='flag of color inverted input image',
+                        action='store_true')
+
+    args = parser.parse_args()
+
+    return args
 
 
 if __name__ == '__main__':

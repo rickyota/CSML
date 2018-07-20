@@ -1,6 +1,7 @@
 import os
 from datetime import datetime
 import argparse
+import textwrap
 
 from train import train_step
 from infer import infer_step
@@ -26,9 +27,9 @@ def Cell_Segmentation():
             raise Exception(e, "Got an error in training step.")
         try:
             infer_step(fname_infer=os.path.join("data", args.infer),
-                       fname_save=os.path.join("result", args.output),
+                       fname_save=os.path.join("result_local", args.output),
                        fname_model=os.path.join("data", args.model),
-                       thre_discard=args.discard, wid_dilate=args.dilate)
+                       thre_discard=args.discard, wid_dilate=args.open)
         except Exception as e:
             raise Exception(e, "Got an error in inference step.")
 
@@ -38,15 +39,13 @@ def Cell_Segmentation():
         print("Only Infer.")
         try:
             infer_step(fname_infer=os.path.join("data", args.infer),
-                       fname_save=os.path.join("result", args.output),
+                       fname_save=os.path.join("result_local", args.output),
                        fname_model=os.path.join("data", args.model),
-                       thre_discard=args.discard, wid_dilate=args.dilate)
+                       thre_discard=args.discard, wid_dilate=args.open)
         except Exception as e:
             raise Exception(e, "Got an error in inference step.")
 
         print("All done.")
-
-        print("afteradd")
 
 
 def argument():
@@ -56,40 +55,47 @@ def argument():
         description='description',
         epilog='description end',
         add_help=True,
+        formatter_class=argparse.RawTextHelpFormatter
     )
 
     parser.add_argument('-f', '--flaginfer',
                         help='Only inferrence',
                         action='store_true')
-    parser.add_argument('-t', '--train', help='train folder name')
-    parser.add_argument('-l', '--label', help='label folder name')
-    parser.add_argument('-i', '--infer', help='infer folder name',
-                        default='research_infer')
-    parser.add_argument('-o', '--output', help='output folder name')
-    parser.add_argument('-m', '--model', help='model file name')
+    parser.add_argument('-t', '--train', help='Train folder name',
+                        default='example_train')
+    parser.add_argument('-l', '--label', help='Label folder name',
+                        default='example_label')
+    parser.add_argument('-i', '--infer', help='Infer folder name',
+                        default='example_infer')
+    parser.add_argument('-o', '--output', help='Output folder name',
+                        default='example_result')
+    parser.add_argument('-m', '--model', help='Model file name',
+                        default='model_example.pkl')
 
-    parser.add_argument('-nr', '--ntrain', help='number of training images',
+    parser.add_argument('-nr', '--ntrain', help='Number of training images',
                         type=int, default=50000)
-    parser.add_argument('-ns', '--ntest', help='number of testing images',
+    parser.add_argument('-ns', '--ntest', help='Number of testing images',
                         type=int, default=3000)
-    parser.add_argument('-he', '--height', help='height',
+    parser.add_argument('-he', '--height', help='Height of patches',
                         type=int, default=64)
-    parser.add_argument('-wi', '--width', help='width',
+    parser.add_argument('-wi', '--width', help='Width of patches',
                         type=int, default=64)
-    parser.add_argument('-td', '--discard', help='threshold discard',
+    parser.add_argument('-td', '--discard', help='Threshold of discarding',
                         type=int, default=100)
-    parser.add_argument('-wd', '--dilate', help='width dilation',
+    parser.add_argument('-wo', '--open', help='Width of opening',
                         type=int, default=1)
-    parser.add_argument('-ne', '--nepoch', help='number of epoch',
+    parser.add_argument('-ne', '--nepoch', help='Number of epoch',
                         type=int, default=1)
-    parser.add_argument('-nb', '--nbatch', help='number of batch',
+    parser.add_argument('-nb', '--nbatch', help='Number of batch',
                         type=int, default=100)
-    parser.add_argument('-mo', '--mode', help='way to choose train images',
+    parser.add_argument('-mo', '--mode',
+                        help=textwrap.dedent('''\
+                        Way to choose train images
+                        back(default): the center of patch is not on background
+                        whole: whole patch is not on background, use when only part of image is labelled.
+                        all: all
+                        '''),
                         default='back')
-    parser.add_argument('-in', '--interim', help='flag of save interm accuracy',
-                        action='store_true')
-    parser.add_argument('-inv', '--inversion', help='flag of color inverted input image',
-                        action='store_true')
 
     args = parser.parse_args()
 

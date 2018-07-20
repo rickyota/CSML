@@ -3,8 +3,6 @@ import numpy as np
 import warnings
 from PIL import Image
 
-print("a")
-
 
 def load_ims_train(dname):
     if os.path.isdir(dname):
@@ -52,7 +50,6 @@ def load_ims_label(dname):
 
 
 def scaling(im):
-    print("scaling", im.min(), im.max())
     return (im - im.min()) / (im.max() - im.min())
 
 

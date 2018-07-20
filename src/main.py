@@ -7,7 +7,6 @@ import os
 from datetime import datetime
 
 
-# start segmentation based on .ini
 def Cell_Segmentation():
     if len(sys.argv) != 2:
         raise SyntaxError(

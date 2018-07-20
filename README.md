@@ -16,12 +16,10 @@ Classifier is optimized by training and corresponding labeled images.
 1. Train model (only for the first time).
 	1. Drag & Drop the images file and the corresponding binary images file.  
 	1. Specify name of model.
-	1. Adjust the parameters if you want.
 	1. Press "Start Training" button.
 1. Infer images.
 	1. Drag & Drop the images file which you want to segment. 
 	1. Select the model which you want to use.
-	1. Adjust the parameters if you want.
 	1. Select output folder.
 	1. Press "Start Infering" button.
 1. Get segmented images file in output folder.
@@ -60,15 +58,15 @@ git clone https://github.com/RickyOta/CSML.git
 
 
 ### Usage
-1. Add images to ```CSML/data/```. The format can be a folder containing images, one tiff file or one other image file.
-1. Edit values in ```CSML/train_infer_example.ini``` for training and inference or in ```CSML/infer_example.ini``` for only inference.  
-	You can edit ini file name as long as it starts with 'train_infer' or 'infer'.
-1. Execute
+1. Add images to a file in ```CSML/data/```.
+1. Execute  
 	```
-	# for training classifier and inferring images 
-	python src/main.py train_infer.ini
+	# for training classifier and inferring images
+	python src/main.py -t "example_train" -l "example_label" -o "example_result" -m "model_example.pkl"
+	
 	# for only inferring images.
-	python src/main.py infer.ini
-	```
+	python src/main.py -f -i "example_infer" -o "example_result" -m "model_example.pkl"
+	```  
+	Details of all options are available ```python src/main.py --help```.
 1. Inferred images are saved in ```CSML/result/```.
 

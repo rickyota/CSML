@@ -2,6 +2,7 @@ import os
 from datetime import datetime
 import argparse
 import textwrap
+import time
 
 from train import train_step
 from infer import infer_step
@@ -17,19 +18,23 @@ def Cell_Segmentation():
     if not args.flaginfer:
         print("Train and infer.")
         try:
+            start = time.time()
             train_step(fname_train=os.path.join("data", args.train),
                        fname_label=os.path.join("data", args.label),
                        fname_model=os.path.join("data", args.model),
                        N_test=args.ntest, N_train=args.ntrain, N_epoch=args.nepoch, batchsize=args.nbatch,
                        hgh=args.height, wid=args.width,
                        mode=args.mode)
+            print("train time", time.time() - start)
         except Exception as e:
             raise Exception(e, "Got an error in training step.")
         try:
+            start = time.time()
             infer_step(fname_infer=os.path.join("data", args.infer),
-                       fname_save=os.path.join("result_local", args.output),
+                       fname_save=os.path.join("result", args.output),
                        fname_model=os.path.join("data", args.model),
                        thre_discard=args.discard, wid_dilate=args.open)
+            print("infer time", time.time() - start)
         except Exception as e:
             raise Exception(e, "Got an error in inference step.")
 
@@ -38,10 +43,12 @@ def Cell_Segmentation():
     else:
         print("Only Infer.")
         try:
+            start = time.time()
             infer_step(fname_infer=os.path.join("data", args.infer),
-                       fname_save=os.path.join("result_local", args.output),
+                       fname_save=os.path.join("result", args.output),
                        fname_model=os.path.join("data", args.model),
                        thre_discard=args.discard, wid_dilate=args.open)
+            print("infer time", time.time() - start)
         except Exception as e:
             raise Exception(e, "Got an error in inference step.")
 

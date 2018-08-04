@@ -35,6 +35,11 @@ Classifier is optimized by training and corresponding labeled images.
 [R. Ota](https://github.com/RickyOta)  
 [R. Nakabayashi](https://github.com/ryought) (for help creating software)
 
+## Publication  
+A novel cell segmentation method for developing embryos using machine learning  
+Rikifumi Ota, Takahiro Ide, Tatsuo Michiue  
+bioRxiv 288720; doi: https://doi.org/10.1101/288720
+
 ---
 
 ##  Usage of Codes

@@ -3,8 +3,9 @@ import pickle
 import os
 from infer_im import infer_im
 
-
 # inferrence step
+
+
 def infer_step(fname_infer, fname_save, fname_model,
                thre_discard, wid_dilate):
 
@@ -27,14 +28,23 @@ def infer_step(fname_infer, fname_save, fname_model,
           "\t", "hgh,wid", data_model['shape'], "\n",
           "\t", "test acc", "{:.3f}".format(data_model['testacc']))
 
-    num_im = len(cim.fnames_infer)
-    for i in range(num_im):
-        im_infer = cim.read_im(cim.fnames_infer[i])
-        im_inferred = infer_im(
-            model_infer, cim.shape, im_infer, thre_discard, wid_dilate)
-        cim.save_im(im_inferred, cim.fnames_inferred[i])
+    for i, (fname_infer, fname_inferred) in enumerate(zip(cim.fnames_infer, cim.fnames_inferred)):
+        if fname_infer.endswith('.tif') or fname_infer.endswith('.tiff'):
+            ims_infer = cim.read_im_tif(fname_infer)
+            ims_inferred = []
+            for im_infer in ims_infer:
+                im_inferred = infer_im(
+                    model_infer, cim.shape, im_infer, thre_discard, wid_dilate)
+                ims_inferred.append(im_inferred)
+            cim.save_im_tif(ims_inferred, fname_inferred)
+
+        else:
+            im_infer = cim.read_im(fname_infer)
+            im_inferred = infer_im(
+                model_infer, cim.shape, im_infer, thre_discard, wid_dilate)
+            cim.save_im(im_inferred, fname_inferred)
 
         if i % 5 == 4:
-            print("Done inferring", i + 1, "/", num_im)
+            print("Done inferring", i + 1, "/", len(cim.fnames_infer))
 
     print("Done inferring.")

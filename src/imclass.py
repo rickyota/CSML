@@ -1,13 +1,13 @@
 import numpy as np
 from cv2 import connectedComponents
-from PIL import Image
 import os
 from random import shuffle
-from io_file import load_ims_train, load_ims_label, read_im, save_im, get_listdir, get_listdir_inferred
+from io_file import load_ims_train, load_ims_label, read_im, read_im_tif, \
+    save_im, save_im_tif, save_xlsx, \
+    get_listdir, get_listdir_inferred, get_listdir_inferred_tag, get_listdir_inferred_stats
 
 
 class ImClass:
-
     def __init__(self, usetype, fname_train="", fname_label="",
                  fname_infer="", fname_inferred="",
                  N_train="", N_test="", hgh=64, wid=64,
@@ -50,6 +50,10 @@ class ImClass:
                 self.fnames_infer = get_listdir(fname_infer)
                 self.fnames_inferred = get_listdir_inferred(
                     fname_inferred, fname_infer)
+                self.fnames_tag = get_listdir_inferred_tag(
+                    self.fnames_inferred)
+                self.fnames_stats = get_listdir_inferred_stats(
+                    self.fnames_inferred)
 
             else:
                 raise FileNotFoundError(
@@ -85,8 +89,23 @@ class ImClass:
     def read_im(self, fname, scale=False):
         return read_im(fname, scale=scale)
 
+    def read_im_tif(self, fname, scale=False):
+        return read_im_tif(fname, scale=scale)
+
     def save_im(self, im, fname):
         save_im(im, fname)
+
+    def save_im_tif(self, ims, fname):
+        save_im_tif(ims, fname)
+
+    def save_im_tag(self, im, fname):
+        save_im(im, fname, mode='I')
+
+    def save_im_tif_tag(self, ims, fname):
+        save_im_tif(ims, fname, mode='I')
+
+    def save_xlsx(self, df, fname):
+        save_xlsx(df, fname)
 
     # load images
     def _load_ims_train(self, fname):

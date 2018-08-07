@@ -2,6 +2,7 @@ import os
 import numpy as np
 import warnings
 from PIL import Image
+import pandas as pd
 
 
 def load_ims_train(dname):
@@ -127,10 +128,26 @@ def get_listdir_inferred(dname_inferred, dname_infer):
     return fnames
 
 
-def save_im(im, fname):
+def get_listdir_inferred_tag(fnames_inferred):
+    fnames = [os.path.splitext(fname)[0] + '_tag.png'
+              if not(fname.endswith('.tif') or fname.endswith('.tiff')) else os.path.splitext(fname)[0] + '_tag.tiff'
+              for fname in fnames_inferred]
+    return fnames
+
+
+def get_listdir_inferred_stats(fnames_inferred):
+    fnames = [os.path.splitext(fname)[0] + '_stats.xlsx'
+              for fname in fnames_inferred]
+    return fnames
+
+
+def save_im(im, fname, mode=None):
     """save image
     """
-    fim = Image.fromarray(im)
+    if mode is not None:
+        fim = Image.fromarray(im, mode=mode)
+    else:
+        fim = Image.fromarray(im)
     try:
         if os.path.isfile(fname):
             warnings.warn(
@@ -141,11 +158,17 @@ def save_im(im, fname):
             e, "Cannot save image to file: {}".format(fname))
 
 
-def save_im_tif(ims, fname):
+def save_im_tif(ims, fname, mode=None):
     """save images to one tif file
     """
-    ims = [Image.fromarray(im) for im in ims]
+    if mode is not None:
+        ims = [Image.fromarray(im, mode=mode) for im in ims]
+    else:
+        ims = [Image.fromarray(im) for im in ims]
     try:
+        if os.path.isfile(fname):
+            warnings.warn(
+                "File is being overwritten: {}.".format(fname))
         if len(ims) == 1:
             ims[0].save(fname, save_all=True)
         else:
@@ -153,3 +176,15 @@ def save_im_tif(ims, fname):
     except Exception as e:
         raise Exception(
             e, "Cannot save images into file: {}".format(fname))
+
+
+def save_xlsx(dfs, fname):
+    if os.path.isfile(fname):
+        warnings.warn(
+            "File is being overwritten: {}.".format(fname))
+    if isinstance(dfs, list):
+        writer = pd.ExcelWriter(fname)
+        for i, df in enumerate(dfs):
+            df.to_excel(writer, 'Image' + str(i + 1))
+    else:
+        dfs.to_excel(fname, 'Image1')

@@ -8,7 +8,7 @@ from stats import tag
 
 
 def infer_step(fname_infer, fname_save, fname_model,
-               thre_discard, wid_dilate):
+               thre_discard, wid_dilate, fstats):
 
     print("Start inferring.")
 
@@ -27,7 +27,7 @@ def infer_step(fname_infer, fname_save, fname_model,
     cim.change_hgh_wid(data_model['shape'])
     print("Info of FCN Classifier: \n",
           "\t", "hgh,wid", data_model['shape'], "\n",
-          "\t", "test acc", "{:.3f}".format(data_model['testacc']))
+          "\t", "test dot acc", "{:.3f}".format(data_model['testacc']))
 
     for i, (fname_infer, fname_inferred, fname_tag, fname_stats) \
             in enumerate(zip(cim.fnames_infer, cim.fnames_inferred, cim.fnames_tag, cim.fnames_stats)):
@@ -43,11 +43,12 @@ def infer_step(fname_infer, fname_save, fname_model,
             ims_tag = []
             dfs_stats = []
             for im_inferred in ims_inferred:
-                im_tag, df_stats = tag(im_inferred)
+                im_tag, df_stats = tag(im_inferred, fstats)
                 ims_tag.append(im_tag)
                 dfs_stats.append(df_stats)
             cim.save_im_tif_tag(ims_tag, fname_tag)
-            cim.save_xlsx(dfs_stats, fname_stats)
+            if fstats:
+                cim.save_xlsx(dfs_stats, fname_stats)
 
         else:
             im_infer = cim.read_im(fname_infer)
@@ -55,9 +56,10 @@ def infer_step(fname_infer, fname_save, fname_model,
                 model_infer, cim.shape, im_infer, thre_discard, wid_dilate)
             cim.save_im(im_inferred, fname_inferred)
 
-            im_tag, df_stats = tag(im_inferred)
+            im_tag, df_stats = tag(im_inferred, fstats)
             cim.save_im_tag(im_tag, fname_tag)
-            cim.save_xlsx(df_stats, fname_stats)
+            if fstats:
+                cim.save_xlsx(df_stats, fname_stats)
 
         if i % 5 == 4:
             print("Done inferring", i + 1, "/", len(cim.fnames_infer))

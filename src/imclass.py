@@ -44,16 +44,20 @@ class ImClass:
         elif usetype == 'infer':
             if os.path.isdir(fname_infer):
 
-                if not os.path.isdir(fname_inferred):
-                    os.mkdir(fname_inferred)
+                fname_inferred_tag = os.path.join(fname_inferred, 'tag')
+                fname_inferred_stats = os.path.join(fname_inferred, 'stats')
+
+                for d in [fname_inferred, fname_inferred_tag, fname_inferred_stats]:
+                    if not os.path.isdir(d):
+                        os.mkdir(d)
 
                 self.fnames_infer = get_listdir(fname_infer)
                 self.fnames_inferred = get_listdir_inferred(
                     fname_inferred, fname_infer)
                 self.fnames_tag = get_listdir_inferred_tag(
-                    self.fnames_inferred)
+                    fname_inferred_tag, self.fnames_inferred)
                 self.fnames_stats = get_listdir_inferred_stats(
-                    self.fnames_inferred)
+                    fname_inferred_stats, self.fnames_inferred)
 
             else:
                 raise FileNotFoundError(

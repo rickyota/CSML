@@ -33,7 +33,8 @@ def Cell_Segmentation():
             infer_step(fname_infer=os.path.join("data", args.infer),
                        fname_save=os.path.join("result", args.output),
                        fname_model=os.path.join("data", args.model),
-                       thre_discard=args.discard, wid_dilate=args.open)
+                       thre_discard=args.discard, wid_dilate=args.close,
+                       fstats=args.nostats)
             print("infer time", time.time() - start)
         except Exception as e:
             raise Exception(e, "Got an error in inference step.")
@@ -47,7 +48,8 @@ def Cell_Segmentation():
             infer_step(fname_infer=os.path.join("data", args.infer),
                        fname_save=os.path.join("result", args.output),
                        fname_model=os.path.join("data", args.model),
-                       thre_discard=args.discard, wid_dilate=args.open)
+                       thre_discard=args.discard, wid_dilate=args.close,
+                       fstats=args.nostats)
             print("infer time", time.time() - start)
         except Exception as e:
             raise Exception(e, "Got an error in inference step.")
@@ -69,18 +71,18 @@ def argument():
                         help='Only inferrence',
                         action='store_true')
     parser.add_argument('-t', '--train', help='Train folder name',
-                        default='example_train')
+                        default='train')
     parser.add_argument('-l', '--label', help='Label folder name',
-                        default='example_label')
+                        default='label')
     parser.add_argument('-i', '--infer', help='Infer folder name',
-                        default='example_infer')
+                        default='infer')
     parser.add_argument('-o', '--output', help='Output folder name',
-                        default='example_result')
+                        default='result')
     parser.add_argument('-m', '--model', help='Model file name',
-                        default='model_example.pkl')
+                        default='model.pkl')
 
     parser.add_argument('-nr', '--ntrain', help='Number of training images',
-                        type=int, default=50000)
+                        type=int, default=20000)
     parser.add_argument('-ns', '--ntest', help='Number of testing images',
                         type=int, default=3000)
     parser.add_argument('-he', '--height', help='Height of patches',
@@ -89,7 +91,7 @@ def argument():
                         type=int, default=64)
     parser.add_argument('-td', '--discard', help='Threshold of discarding',
                         type=int, default=100)
-    parser.add_argument('-wo', '--open', help='Width of opening',
+    parser.add_argument('-wc', '--close', help='Width of closing',
                         type=int, default=1)
     parser.add_argument('-ne', '--nepoch', help='Number of epoch',
                         type=int, default=1)
@@ -103,6 +105,10 @@ def argument():
                         all: all
                         '''),
                         default='back')
+
+    parser.add_argument('-s', '--nostats',
+                        help='Do not return stats. Much faster.',
+                        action='store_false')
 
     args = parser.parse_args()
 

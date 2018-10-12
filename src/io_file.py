@@ -128,15 +128,14 @@ def get_listdir_inferred(dname_inferred, dname_infer):
     return fnames
 
 
-def get_listdir_inferred_tag(fnames_inferred):
-    fnames = [os.path.splitext(fname)[0] + '_tag.png'
-              if not(fname.endswith('.tif') or fname.endswith('.tiff')) else os.path.splitext(fname)[0] + '_tag.tiff'
+def get_listdir_inferred_tag(fname_tag, fnames_inferred):
+    fnames = [os.path.join(fname_tag, os.path.basename(fname))
               for fname in fnames_inferred]
     return fnames
 
 
-def get_listdir_inferred_stats(fnames_inferred):
-    fnames = [os.path.splitext(fname)[0] + '_stats.xlsx'
+def get_listdir_inferred_stats(fname_stats, fnames_inferred):
+    fnames = [os.path.join(fname_stats, os.path.splitext(os.path.basename(fname))[0]) + '.xlsx'
               for fname in fnames_inferred]
     return fnames
 

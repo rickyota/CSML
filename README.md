@@ -1,15 +1,15 @@
-# CSML    ver. 1.0.0
+# CSML    ver. 1.1.0
 Cell Segmenter using Machine Learning.  
-Software based on this code is distributed on [(Releases)](https://github.com/RickyOta/CSML/releases).  
-Details are on [(Wiki)](https://github.com/RickyOta/CSML/wiki).
+[Releases](https://github.com/rickyota/CSML/releases): Software based on this code.
+[(Wiki)](https://github.com/rickyota/CSML/wiki): Details of CSML.
 
-<img src="https://github.com/RickyOta/CSML/wiki/Images/example_infer_concat.png" height="256px">
+<img src="https://github.com/rickyota/CSML/wiki/Images/example_infer_concat.png" height="256px">
 
 
 ## Description
-CSML returns segmented images of fluorescent inference images, inferred by FCN classifier.  
+CSML returns segmented images of fluorescent images, inferred by FCN classifier, tagged images and statistics of each cell.  
 Classifier is optimized by training and corresponding labeled images.  
-
+Statistics contain Centroids, Area, Perimeter, Eccentricity, Major axis, Minor axis, Orientation and Solidity.
 
 ## Usage of Software
 1. Launch CSML.exe.
@@ -27,12 +27,12 @@ Classifier is optimized by training and corresponding labeled images.
 ### Notes
 
 - Click "Run with Example" to use examples.
-- Format of Images can be a folder containing images, one tiff file or one other image file.  
+- Format of Images is a folder containing images.  
 - Accuracy displayed in model list is dot accuracy.
 
 
 ## Authors
-[R. Ota](https://github.com/RickyOta)  
+[R. Ota](https://github.com/rickyota)  
 [R. Nakabayashi](https://github.com/ryought) (for help creating software)
 
 ## Publication  
@@ -49,11 +49,11 @@ Please refer to this section if you want to run the codes directly.
 - Python >=3.6
 - Chainer >=3.2
 - OpenCV >=3.4
-
+- Scikit-image >=0.14
 
 ### Installation
 ```
-git clone https://github.com/RickyOta/CSML.git
+git clone https://github.com/rickyota/CSML.git
 ```
 
 
@@ -61,11 +61,11 @@ git clone https://github.com/RickyOta/CSML.git
 1. Add images to a file in ```CSML/data/```.
 1. Execute  
 	```
-	# for training classifier and inferring images
-	python src/main.py -t "example_train" -l "example_label" -o "example_result" -m "model_example.pkl"
+	# for training classifier and inferring images.
+	python src/main.py -t "train" -l "label" -o "result" -m "model.pkl" -i "infer"
 	
 	# for only inferring images.
-	python src/main.py -f -i "example_infer" -o "example_result" -m "model_example.pkl"
+	python src/main.py -f -i "infer" -o "result" -m "model.pkl"
 	```  
 	Details of all options are available ```python src/main.py --help```.
 1. Inferred images are saved in ```CSML/result/```.

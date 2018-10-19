@@ -1,7 +1,7 @@
 # CSML    ver. 1.1.0
 Cell Segmenter using Machine Learning.  
 [Releases](https://github.com/rickyota/CSML/releases): Software based on this code.  
-[(Wiki)](https://github.com/rickyota/CSML/wiki): Details of CSML.  
+[Wiki](https://github.com/rickyota/CSML/wiki): Details of CSML.  
 
 <img src="https://github.com/rickyota/CSML/wiki/Images/example_infer_concat.png" height="256px">
 
@@ -58,9 +58,17 @@ Please refer to this section if you want to run the codes directly.
 git clone https://github.com/rickyota/CSML.git
 ```
 
+### Easy Usage
+1. Add images to folders in ```CSML/data/```.
+1. Execute
+	```
+	sh csml.sh
+	```
+1. Inferred images are saved in ```CSML/result/```.
+
 
 ### Usage
-1. Add images to a file in ```CSML/data/```.
+1. Add images to folders in ```CSML/data/```.
 1. Execute  
 	```
 	# for training classifier and inferring images.

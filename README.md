@@ -3,9 +3,9 @@ Cell Segmenter using Machine Learning.
 [Releases](https://github.com/rickyota/CSML/releases): Software based on this code.  
 [Wiki](https://github.com/rickyota/CSML/wiki): Details of CSML.  
 
-<img src="https://github.com/rickyota/CSML/wiki/Images/example_infer_concat.png" height="256px">
+<img src="https://github.com/rickyota/CSML/wiki/image/example_infer_concat.png" height="256px">
 
-<img src="https://github.com/rickyota/CSML/wiki/Images/stats.png" width="512px">
+<img src="https://github.com/rickyota/CSML/wiki/image/stats.png" width="512px">
 
 
 ## Description

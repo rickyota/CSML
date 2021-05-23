@@ -66,7 +66,7 @@ $ conda env create --file environment.yml
     - Make sure that you indicate the same image name in `label` and `train` folder.
 1. Execute
 	```
-  $ conda activate csml
+    $ conda activate csml
 	$ bash csml.sh
 	```
 1. Inferred images are saved in ```./result/```.

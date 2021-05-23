@@ -63,7 +63,7 @@ conda env create --file environment.yml
 
 ### Usage
 1. Add images to folders in ```./data/```.
-    - Make sure that indicate the same image name in `label` and `train` folder.
+    - Make sure that you indicate the same image name in `label` and `train` folder.
 1. Execute
 	```
     conda activate csml

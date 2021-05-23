@@ -1,4 +1,4 @@
-# CSML    ver. 1.1.0
+# CSML    ver. 1.2.0
 Cell Segmenter using Machine Learning.  
 [Releases](https://github.com/rickyota/CSML/releases): Software based on this code.  
 [Wiki](https://github.com/rickyota/CSML/wiki): Details of CSML.  
@@ -44,39 +44,33 @@ bioRxiv 288720; doi: https://doi.org/10.1101/288720
 
 ---
 
-##  Usage of Codes
+##  Usage of Code
 Please refer to this section if you want to run the codes directly.
 
 ### Requirement
-- Python >=3.6
-- Chainer >=3.2
-- OpenCV >=3.4
-- Scikit-image >=0.14
+- conda 
 
 ### Installation
 ```
 git clone https://github.com/rickyota/CSML.git
 ```
 
-### Easy Usage
-1. Add images to folders in ```CSML/data/```.
-1. Execute
-	```
-	sh csml.sh
-	```
-1. Inferred images are saved in ```CSML/result/```.
+You need to use `conda` to install python dependencies.
+```
+conda env create --file environment.yml
+```
 
 
 ### Usage
-1. Add images to folders in ```CSML/data/```.
-1. Execute  
+1. Add images to folders in ```./data/```.
+    - Make sure that indicate the same image name in `label` and `train` folder.
+1. Execute
 	```
-	# for training classifier and inferring images.
-	python src/main.py -t "train" -l "label" -o "result" -m "model.pkl" -i "infer"
-	
-	# for only inferring images.
-	python src/main.py -f -i "infer" -o "result" -m "model.pkl"
-	```  
-	Details of all options are available ```python src/main.py --help```.
-1. Inferred images are saved in ```CSML/result/```.
+    conda activate csml
+	bash csml.sh
+	```
+1. Inferred images are saved in ```./result/```.
+
+
+If you want to only run inferring step or run csml with various parameters, refer to `csml_onlyinfer.sh` and `csml_paras.sh`
 

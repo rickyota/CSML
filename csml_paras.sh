@@ -8,7 +8,7 @@ python -m csml.src \
     --infer "./data/infer/" \
     --mode "back" \
     --ntrain 20000 \
-    --discard 64 \
+    --discard 100 \
     --close 1 \
     --height 64 \
     --width 64 \

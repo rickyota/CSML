@@ -52,12 +52,12 @@ Please refer to this section if you want to run the codes directly.
 
 ### Installation
 ```
-git clone https://github.com/rickyota/CSML.git
+$ git clone https://github.com/rickyota/CSML.git
 ```
 
 You need to use `conda` to install python dependencies.
 ```
-conda env create --file environment.yml
+$ conda env create --file environment.yml
 ```
 
 
@@ -66,11 +66,11 @@ conda env create --file environment.yml
     - Make sure that you indicate the same image name in `label` and `train` folder.
 1. Execute
 	```
-    conda activate csml
-	bash csml.sh
+  $ conda activate csml
+	$ bash csml.sh
 	```
 1. Inferred images are saved in ```./result/```.
 
 
-If you want to only run inferring step or run csml with various parameters, refer to `csml_onlyinfer.sh` and `csml_paras.sh`
+If you want to only run inferring step or run csml with various parameters, refer to `csml_onlyinfer.sh` and `csml_paras.sh`.
 

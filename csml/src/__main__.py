@@ -2,6 +2,7 @@ from datetime import datetime
 import argparse
 import textwrap
 import time
+import numpy as np
 
 from . import train
 from . import infer
@@ -13,6 +14,11 @@ def Cell_Segmentation():
     print(datetime.now().strftime("%Y/%m/%d %H:%M:%S"))
 
     args = argument()
+
+    print("Fix random seed to ",args.seed,".")
+    np.random.seed(args.seed)
+
+
 
     if not args.finfer:
         print("Train and infer.")
@@ -113,6 +119,8 @@ def argument():
                         type=int, default=1)
     parser.add_argument('-nb', '--nbatch', help='Number of batch',
                         type=int, default=100)
+    parser.add_argument('-sd', '--seed', help='Random seed',
+                        type=int, default=51)
     parser.add_argument('-mo', '--mode',
                         help=textwrap.dedent('''\
                         Way to choose train patches

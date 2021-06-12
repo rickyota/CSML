@@ -12,4 +12,5 @@ python -m csml.src \
     --close 1 \
     --height 64 \
     --width 64 \
+    --seed 51
 

@@ -1,4 +1,4 @@
-# CSML    ver. 1.2.0
+# CSML    ver. 1.2.1
 Cell Segmenter using Machine Learning.  
 [Releases](https://github.com/rickyota/CSML/releases): Software based on this code.  
 [Wiki](https://github.com/rickyota/CSML/wiki): Details of CSML.  

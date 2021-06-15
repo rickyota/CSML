@@ -63,7 +63,7 @@ $ conda env create --file environment.yml
 
 ### Usage
 1. Add images to folders in ```./data/```.
-    - Make sure that you indicate the same image name in `label` and `train` folder.
+    - Make sure that you set the same image name in `label` and `train` folder.
 1. Execute
 	```
     $ conda activate csml
@@ -72,5 +72,5 @@ $ conda env create --file environment.yml
 1. Inferred images are saved in ```./result/```.
 
 
-If you want to only run inferring step or run csml with various parameters, refer to `csml_onlyinfer.sh` and `csml_paras.sh`.
+If you want to run inferring step only or run csml with various parameters, refer to `csml_onlyinfer.sh` and `csml_paras.sh`.
 

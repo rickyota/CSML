@@ -15,8 +15,8 @@ def tag(im, fstats):
 
         from skimage.measure import regionprops_table
         props = regionprops_table(im_label, cache=True,
-                    properties=columns) 
-        df=pd.DataFrame(props)
+                                  properties=columns)
+        df = pd.DataFrame(props)
 
         """
         # old ver.
@@ -39,7 +39,6 @@ def tag(im, fstats):
                           index=np.arange(1, len(props) + 1),
                           columns=columns)
         """
-
 
         return im_label, df
     else:

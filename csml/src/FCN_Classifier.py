@@ -1,4 +1,3 @@
-import numpy as np
 from chainer import Chain
 from chainer.initializers import HeNormal
 from chainer import links as L

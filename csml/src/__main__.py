@@ -15,10 +15,8 @@ def Cell_Segmentation():
 
     args = argument()
 
-    print("Fix random seed to ",args.seed,".")
+    print("Fix random seed to ", args.seed, ".")
     np.random.seed(args.seed)
-
-
 
     if not args.finfer:
         print("Train and infer.")
@@ -31,12 +29,6 @@ def Cell_Segmentation():
                              N_test=args.ntest, N_train=args.ntrain, N_epoch=args.nepoch, batchsize=args.nbatch,
                              hgh=args.height, wid=args.width,
                              mode=args.mode)
-            # train.train_step(fname_train=os.path.join("data", args.train),
-            #                 fname_label=os.path.join("data", args.label),
-            #                 fname_model=os.path.join("data", args.model),
-            #                 N_test=args.ntest, N_train=args.ntrain, N_epoch=args.nepoch, batchsize=args.nbatch,
-            #                 hgh=args.height, wid=args.width,
-            #                 mode=args.mode)
             print("train time", time.time() - start)
         except Exception as e:
             raise Exception(e, "Got an error in training step.")
@@ -47,11 +39,6 @@ def Cell_Segmentation():
                              fname_model=args.model,
                              thre_discard=args.discard, wid_dilate=args.close,
                              fstats=args.nostats)
-            # infer.infer_step(fname_infer=os.path.join("data", args.infer),
-            #                 fname_save=os.path.join("result", args.output),
-            #                 fname_model=os.path.join("data", args.model),
-            #                 thre_discard=args.discard, wid_dilate=args.close,
-            #                 fstats=args.nostats)
             print("infer time", time.time() - start)
         except Exception as e:
             raise Exception(e, "Got an error in inference step.")
@@ -67,11 +54,6 @@ def Cell_Segmentation():
                              fname_model=args.model,
                              thre_discard=args.discard, wid_dilate=args.close,
                              fstats=args.nostats)
-            # infer.infer_step(fname_infer=os.path.join("data", args.infer),
-            #                 fname_save=os.path.join("result", args.output),
-            #                 fname_model=os.path.join("data", args.model),
-            #                 thre_discard=args.discard, wid_dilate=args.close,
-            #                 fstats=args.nostats)
             print("infer time", time.time() - start)
         except Exception as e:
             raise Exception(e, "Got an error in inference step.")
@@ -90,7 +72,7 @@ def argument():
     )
 
     parser.add_argument('-f', '--finfer',
-                        help='Only inferrence',
+                        help='Only inference',
                         action='store_true')
     parser.add_argument('-t', '--train', help='Train folder name',
                         default='train')

@@ -32,10 +32,6 @@ class ImClass:
             self.__ims_train = self._load_ims_train(fname_train)
             self.__ims_label = self._load_ims_label(fname_label)
 
-            # if self.__ims_train.shape[0] != self.__ims_label.shape[0]:
-            #    raise ValueError(
-            #        "Number of images in two folders or files are different: \
-            #         {0} and {1}".format(fname_train, fname_label))
             if self.__ims_train.shape[1] != self.__ims_label.shape[1] or \
                     self.__ims_train.shape[2] != self.__ims_label.shape[2]:
                 raise ValueError(
@@ -48,7 +44,6 @@ class ImClass:
         elif usetype == 'infer':
             if os.path.isdir(fname_infer):
 
-                #fname_inferred_tag = os.path.join(fname_inferred, 'tag')
                 fname_inferred_tag = os.path.join(fname_inferred, 'numbered')
                 fname_inferred_stats = os.path.join(fname_inferred, 'stats')
 
@@ -180,12 +175,12 @@ class ImClass:
                 np.uint8(1 - im_label))
             bound[bound != 1] = 0
             bound = 1 - bound
-            bound = np.asarray(bound, bool)
+            bound = np.asarray(bound, np.bool)
             return bound
 
         elif self.mode == 'all':
             bound = np.ones_like(im_label)
-            bound = np.asarray(bound, bool)
+            bound = np.asarray(bound, np.bool)
             return bound
 
         else:
@@ -211,8 +206,6 @@ class ImClass:
     def _patch(self, ims, pos):
         return ims[pos[0]][(pos[1][0] - self.hhgh):(pos[1][0] + self.hhgh),
                            (pos[1][1] - self.hwid):(pos[1][1] + self.hwid)]
-        # return ims[pos[0]][pos[1][0] - self.hhgh:pos[1][0] + self.hhgh,
-        #                   pos[1][1] - self.hwid:pos[1][1] + self.hwid]
 
     def _make_x_batch(self, ims, poss):
         batch = [[self._patch(ims, pos)] for pos in poss]

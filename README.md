@@ -38,6 +38,8 @@ Statistics contain Centroids, Area, Perimeter, Eccentricity, Major axis, Minor a
 [R. Nakabayashi](https://github.com/ryought) (for help creating software)
 
 ## Publication  
+Ota R, Ide T, Michiue T. A rapid segmentation method of cell boundary for developing embryos using machine learning with a personal computer. Dev Growth Differ. 2021 Oct;63(8):406-416. doi: 10.1111/dgd.12747. Epub 2021 Sep 20. PMID: 34453320.
+
 A novel cell segmentation method for developing embryos using machine learning  
 Rikifumi Ota, Takahiro Ide, Tatsuo Michiue  
 bioRxiv 288720; doi: https://doi.org/10.1101/288720
